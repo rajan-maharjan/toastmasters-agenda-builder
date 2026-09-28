@@ -1,0 +1,486 @@
+﻿/* ==========================================================================
+   TIAgendaCreator — Main Stylesheet
+   Toastmasters Meeting Agenda PDF Generator
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Google Fonts Import
+   -------------------------------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
+
+/* --------------------------------------------------------------------------
+   CSS Custom Properties (Brand Colors)
+   -------------------------------------------------------------------------- */
+:root {
+    --tm-blue:        #004165;
+    --tm-blue-light:  #0069a6;
+    --tm-blue-dark:   #003050;
+    --tm-green:       #006847;
+    --tm-green-dark:  #004d35;
+    --tm-green-light: #c8e6c9;
+    --tm-white:       #ffffff;
+    --tm-gray-light:  #f8f9fa;
+    --tm-gray-border: #e0e0e0;
+    --tm-shadow-sm:   rgba(0, 65, 101, 0.08);
+    --tm-shadow-md:   rgba(0, 65, 101, 0.10);
+    --tm-shadow-lg:   rgba(0, 65, 101, 0.20);
+}
+
+/* --------------------------------------------------------------------------
+   Base & Typography
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: #f0f2f5;
+    color: #222;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+h1, h2, h3 { color: var(--tm-blue); font-weight: 700; }
+h4, h5, h6 { color: var(--tm-blue); font-weight: 600; }
+
+a { color: var(--tm-blue-light); text-decoration: none; }
+a:hover { color: var(--tm-blue); text-decoration: underline; }
+
+/* --------------------------------------------------------------------------
+   Navbar
+   -------------------------------------------------------------------------- */
+.navbar {
+    background-color: var(--tm-blue) !important;
+    box-shadow: 0 2px 8px var(--tm-shadow-lg);
+}
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+    color: var(--tm-white) !important;
+}
+.navbar-brand img { height: 36px; width: auto; margin-right: 10px; vertical-align: middle; }
+.navbar-nav .nav-link { color: rgba(255,255,255,0.85) !important; font-weight: 500; transition: color 0.2s ease; }
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active { color: var(--tm-white) !important; }
+.navbar-toggler { border-color: rgba(255,255,255,0.4); }
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255,255,255,0.85%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* --------------------------------------------------------------------------
+   Page Cards
+   -------------------------------------------------------------------------- */
+.card {
+    border: none;
+    box-shadow: 0 2px 10px var(--tm-shadow-md);
+    border-radius: 10px;
+    margin-bottom: 24px;
+}
+.card-header {
+    background: var(--tm-blue);
+    color: var(--tm-white);
+    border-radius: 10px 10px 0 0 !important;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 14px 20px;
+    border-bottom: none;
+}
+.card-header .card-title { margin: 0; color: var(--tm-white); }
+.card-body { padding: 20px; }
+.card-footer {
+    background: var(--tm-gray-light);
+    border-top: 1px solid var(--tm-gray-border);
+    border-radius: 0 0 10px 10px !important;
+    padding: 14px 20px;
+}
+
+/* --------------------------------------------------------------------------
+   Form Sections
+   -------------------------------------------------------------------------- */
+.form-section {
+    background: var(--tm-white);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px var(--tm-shadow-sm);
+}
+.form-section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--tm-blue);
+    border-bottom: 2px solid var(--tm-blue);
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+}
+.form-label { font-weight: 500; color: #444; margin-bottom: 4px; }
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--tm-blue-light);
+    box-shadow: 0 0 0 0.2rem rgba(0,105,166,0.25);
+}
+.form-control, .form-select {
+    border-radius: 6px;
+    border: 1px solid var(--tm-gray-border);
+    font-size: 0.925rem;
+}
+.input-group-text {
+    background: var(--tm-gray-light);
+    border-color: var(--tm-gray-border);
+    color: var(--tm-blue);
+    font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Dynamic Row Controls
+   -------------------------------------------------------------------------- */
+.dynamic-row {
+    background: var(--tm-gray-light);
+    border: 1px solid var(--tm-gray-border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.dynamic-row:hover {
+    border-color: var(--tm-blue-light);
+    box-shadow: 0 2px 6px var(--tm-shadow-sm);
+}
+.dynamic-row .row-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: var(--tm-blue);
+    color: var(--tm-white);
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+.btn-remove-row {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.85rem;
+    border: none;
+    background: #ffebee;
+    color: #c62828;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.btn-remove-row:hover { background: #c62828; color: var(--tm-white); }
+.btn-add-row {
+    border: 2px dashed var(--tm-blue-light);
+    color: var(--tm-blue);
+    background: transparent;
+    border-radius: 8px;
+    padding: 10px 20px;
+    width: 100%;
+    font-weight: 600;
+    transition: background 0.2s ease, color 0.2s ease;
+    cursor: pointer;
+}
+.btn-add-row:hover { background: var(--tm-blue); color: var(--tm-white); border-color: var(--tm-blue); }
+
+/* --------------------------------------------------------------------------
+   Officers Badge Styles
+   -------------------------------------------------------------------------- */
+.role-badge { font-size: 0.75rem; padding: 3px 8px; border-radius: 20px; display: inline-block; font-weight: 600; }
+.role-regular        { background: #e3f2fd; color: #1565c0; }
+.role-sergeant       { background: #fff3e0; color: #e65100; }
+.role-past-president { background: #f3e5f5; color: #6a1b9a; }
+.role-president      { background: #e8f5e9; color: var(--tm-green); }
+
+/* --------------------------------------------------------------------------
+   Tables
+   -------------------------------------------------------------------------- */
+.table th {
+    background: var(--tm-blue);
+    color: var(--tm-white);
+    font-weight: 600;
+    white-space: nowrap;
+    vertical-align: middle;
+    border-color: #003a5a;
+}
+.table td { vertical-align: middle; }
+.table-hover tbody tr:hover { background: rgba(0,65,101,0.05); }
+.table-bordered { border-color: var(--tm-gray-border); }
+.table-striped > tbody > tr:nth-of-type(odd) > * { background-color: rgba(0,65,101,0.03); }
+
+/* --------------------------------------------------------------------------
+   Action Buttons
+   -------------------------------------------------------------------------- */
+.btn-tm-primary {
+    background: var(--tm-blue);
+    color: var(--tm-white);
+    border: none;
+    font-weight: 600;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+.btn-tm-primary:hover,
+.btn-tm-primary:focus { background: var(--tm-blue-dark); color: var(--tm-white); transform: translateY(-1px); }
+.btn-tm-primary:active { transform: translateY(0); }
+
+.btn-tm-green {
+    background: var(--tm-green);
+    color: var(--tm-white);
+    border: none;
+    font-weight: 600;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+.btn-tm-green:hover,
+.btn-tm-green:focus { background: var(--tm-green-dark); color: var(--tm-white); transform: translateY(-1px); }
+.btn-tm-green:active { transform: translateY(0); }
+
+.btn-tm-outline {
+    background: transparent;
+    color: var(--tm-blue);
+    border: 2px solid var(--tm-blue);
+    font-weight: 600;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.btn-tm-outline:hover { background: var(--tm-blue); color: var(--tm-white); }
+
+/* --------------------------------------------------------------------------
+   Meeting Badge & Info Pills
+   -------------------------------------------------------------------------- */
+.meeting-badge {
+    background: var(--tm-blue);
+    color: var(--tm-white);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+}
+.theme-badge {
+    background: linear-gradient(135deg, var(--tm-blue), var(--tm-green));
+    color: var(--tm-white);
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* --------------------------------------------------------------------------
+   Time Display
+   -------------------------------------------------------------------------- */
+.time-display {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    color: var(--tm-blue);
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+/* --------------------------------------------------------------------------
+   Agenda Preview Table (view.php)
+   -------------------------------------------------------------------------- */
+.agenda-preview { font-size: 0.9rem; }
+.agenda-preview thead th { background: var(--tm-blue); color: var(--tm-white); font-weight: 600; padding: 10px 12px; }
+.agenda-preview .agenda-time { font-weight: 700; color: var(--tm-blue); white-space: nowrap; font-family: 'Courier New', Courier, monospace; }
+.agenda-preview .agenda-role { font-weight: 600; color: #333; }
+.agenda-preview .agenda-member { color: var(--tm-green); font-weight: 500; }
+.agenda-preview .sub-table { margin-left: 20px; }
+.agenda-preview .sub-table td { padding: 4px 8px; font-size: 0.85rem; }
+.evaluator-row-even { background: var(--tm-green-light) !important; }
+.evaluator-row-odd  { background: var(--tm-white) !important; }
+.speaker-row { background: #e8f5e9 !important; font-weight: 500; }
+
+/* --------------------------------------------------------------------------
+   Status Badges
+   -------------------------------------------------------------------------- */
+.badge-theme {
+    background: linear-gradient(135deg, var(--tm-blue), var(--tm-green));
+    color: var(--tm-white);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: inline-block;
+}
+.badge-draft {
+    background: #fff8e1;
+    color: #f57f17;
+    border: 1px solid #ffe082;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.badge-final {
+    background: #e8f5e9;
+    color: var(--tm-green);
+    border: 1px solid #a5d6a7;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Alert / Info Boxes
+   -------------------------------------------------------------------------- */
+.alert-tm {
+    background: #e3f0f9;
+    border-left: 4px solid var(--tm-blue);
+    border-radius: 6px;
+    color: #1a3a4f;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+}
+.alert-tm-green {
+    background: #e8f5e9;
+    border-left: 4px solid var(--tm-green);
+    border-radius: 6px;
+    color: #1b3d2f;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+}
+
+/* --------------------------------------------------------------------------
+   Page Hero / Header Strip
+   -------------------------------------------------------------------------- */
+.page-hero {
+    background: linear-gradient(135deg, var(--tm-blue) 0%, var(--tm-blue-light) 100%);
+    color: var(--tm-white);
+    padding: 32px 0 28px 0;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 12px var(--tm-shadow-lg);
+}
+.page-hero h1 { color: var(--tm-white); font-size: 1.8rem; margin-bottom: 6px; }
+.page-hero p  { color: rgba(255,255,255,0.85); margin-bottom: 0; font-size: 1rem; }
+
+/* --------------------------------------------------------------------------
+   Stats / Summary Tiles
+   -------------------------------------------------------------------------- */
+.stat-tile {
+    background: var(--tm-white);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 8px var(--tm-shadow-sm);
+    border-top: 4px solid var(--tm-blue);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-tile:hover { transform: translateY(-2px); box-shadow: 0 6px 16px var(--tm-shadow-md); }
+.stat-tile.green-top { border-top-color: var(--tm-green); }
+.stat-tile .stat-value { font-size: 2rem; font-weight: 700; color: var(--tm-blue); line-height: 1.1; }
+.stat-tile .stat-label { font-size: 0.85rem; color: #666; margin-top: 4px; font-weight: 500; }
+
+/* --------------------------------------------------------------------------
+   PDF Action Bar
+   -------------------------------------------------------------------------- */
+.pdf-action-bar {
+    background: var(--tm-white);
+    border-radius: 10px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px var(--tm-shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+.pdf-action-bar .pdf-info { font-size: 0.9rem; color: #555; }
+
+/* --------------------------------------------------------------------------
+   Loading Spinner Overlay
+   -------------------------------------------------------------------------- */
+.pdf-loading {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,65,101,0.70);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: var(--tm-white);
+    backdrop-filter: blur(2px);
+}
+.pdf-loading.active { display: flex; }
+.pdf-loading .spinner-border { width: 3rem; height: 3rem; border-width: 0.3em; margin-bottom: 16px; }
+.pdf-loading p { font-size: 1.1rem; font-weight: 500; margin: 0; letter-spacing: 0.5px; }
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+.site-footer {
+    background: var(--tm-blue);
+    color: rgba(255,255,255,0.85);
+    text-align: center;
+    padding: 16px;
+    margin-top: auto;
+    font-size: 0.9rem;
+}
+.site-footer a { color: rgba(255,255,255,0.70); text-decoration: underline; }
+.site-footer a:hover { color: var(--tm-white); }
+
+/* --------------------------------------------------------------------------
+   Utility Classes
+   -------------------------------------------------------------------------- */
+.text-tm-blue    { color: var(--tm-blue) !important; }
+.text-tm-green   { color: var(--tm-green) !important; }
+.bg-tm-blue      { background-color: var(--tm-blue) !important; }
+.bg-tm-green     { background-color: var(--tm-green) !important; }
+.border-tm-blue  { border-color: var(--tm-blue) !important; }
+.border-tm-green { border-color: var(--tm-green) !important; }
+.fw-600          { font-weight: 600; }
+.fw-700          { font-weight: 700; }
+
+/* --------------------------------------------------------------------------
+   Responsive Tweaks
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+    .form-section { padding: 16px; }
+    .dynamic-row  { padding: 12px 40px 12px 12px; }
+    .page-hero h1 { font-size: 1.4rem; }
+    .stat-tile .stat-value { font-size: 1.6rem; }
+    .pdf-action-bar { flex-direction: column; align-items: stretch; }
+    .pdf-action-bar .btn { width: 100%; text-align: center; }
+    .agenda-preview .sub-table { margin-left: 0; }
+}
+@media (max-width: 576px) {
+    .meeting-badge, .theme-badge, .badge-theme { font-size: 0.78rem; padding: 4px 10px; }
+    .time-display { font-size: 0.95rem; }
+}
+
+/* --------------------------------------------------------------------------
+   Print Styles
+   -------------------------------------------------------------------------- */
+@media print {
+    .no-print { display: none !important; }
+    body { background: white; }
+    .card { box-shadow: none; border: 1px solid #ddd; }
+    .agenda-preview thead th {
+        background-color: var(--tm-blue) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .evaluator-row-even {
+        background: var(--tm-green-light) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}

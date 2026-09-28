@@ -1,0 +1,8 @@
+﻿Place your Toastmasters International logo here as:
+  toastmasters_logo.png
+
+The logo should be approximately 150x100 pixels (PNG format).
+Download from: https://www.toastmasters.org
+
+The PDF generator will automatically use this image if present.
+If not present, a text-based placeholder will be rendered.

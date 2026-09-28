@@ -1,0 +1,8 @@
+Options -Indexes
+RewriteEngine On
+# Internal code, dependencies, schema, tests and local configuration are not web routes.
+RewriteRule ^(?:config|includes|vendor|sql|tests|tools|\.git|\.agents|\.codex)(?:/|$) - [F,END,NC]
+RewriteRule (^|/)\. - [F,END]
+<FilesMatch "(?i)(\.(?:sql|log|bak|old|ini|env|md|lock|ps1)$|^composer\.json$)">
+    Require all denied
+</FilesMatch>

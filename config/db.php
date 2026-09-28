@@ -1,10 +1,10 @@
 <?php
 
 $databaseConfig = is_file(__DIR__ . '/database.local.php') ? require __DIR__ . '/database.local.php' : [];
-define('DB_HOST', getenv('AGENDA_DB_HOST') ?: ($databaseConfig['host'] ?? 'localhost'));
-define('DB_NAME', getenv('AGENDA_DB_NAME') ?: ($databaseConfig['name'] ?? 'toasmaster_agenda'));
-define('DB_USER', getenv('AGENDA_DB_USER') ?: ($databaseConfig['user'] ?? ''));
-define('DB_PASS', getenv('AGENDA_DB_PASS') !== false ? getenv('AGENDA_DB_PASS') : ($databaseConfig['password'] ?? ''));
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'db_toasmaster_agenda');
+define('DB_USER', 'root');
+define('DB_PASS', 'Root@123');
 define('DB_CHARSET', 'utf8mb4');
 
 /**

@@ -1,8 +1,8 @@
 <?php
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'db_toasmaster_agenda');
-define('DB_USER', 'root');
-define('DB_PASS', 'Root@123');
+define('DB_NAME', '[DATABASE_NAME]');
+define('DB_USER', '[DB-USERR]');
+define('DB_PASS', '[DB-PASSWORD]');
 define('DB_CHARSET', 'utf8mb4');
 
 /**

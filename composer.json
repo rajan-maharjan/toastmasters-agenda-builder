@@ -1,0 +1,12 @@
+{
+    "name": "toastmasters/agenda-generator",
+    "description": "Toastmasters Meeting Agenda PDF Generator",
+    "type": "project",
+    "require": {
+        "php": ">=8.0",
+        "tecnickcom/tcpdf": "^6.7"
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}

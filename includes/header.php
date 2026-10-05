@@ -1,6 +1,6 @@
 <?php
 $pageTitle = $pageTitle ?? 'Toastmasters Agenda Generator';
-$selectedOrder = ($_GET['orderby'] ?? 'TT') === 'FS' ? 'FS' : 'TT';
+$selectedOrder = ($meeting['agenda_order'] ?? 'TT') === 'FS' ? 'FS' : 'TT';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -52,7 +52,7 @@ $selectedOrder = ($_GET['orderby'] ?? 'TT') === 'FS' ? 'FS' : 'TT';
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="navbar-brand">by keeping
-            <select name="orderby" id="orderby" aria-label="First agenda segment">
+            <select name="agenda_order" id="orderby" form="agenda-form" aria-label="First agenda segment" <?= !empty($editable) ? '' : 'disabled' ?>>
                 <option value="TT" <?= $selectedOrder === 'TT' ? 'selected' : '' ?>>Table Topic</option>
                 <option value="FS" <?= $selectedOrder === 'FS' ? 'selected' : '' ?>>Featured Speaker</option>
             </select>

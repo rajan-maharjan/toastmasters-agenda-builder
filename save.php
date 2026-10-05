@@ -10,7 +10,7 @@ require_once __DIR__ . '/includes/agenda.php';
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') { header('Location: index.php'); exit; }
 
 $pdo = getDB();
-$meeting = [];
+$meeting = ['agenda_order' => $_POST['agenda_order'] ?? 'TT'];
 foreach (['district', 'division', 'area', 'meeting_number', 'theme', 'meeting_date', 'start_time', 'timezone', 'mission', 'quote_text', 'quote_author', 'venue_details'] as $field) {
     $meeting[$field] = trim((string)($_POST[$field] ?? ''));
 }
@@ -102,7 +102,7 @@ $meeting['end_time'] = buildAgenda($meeting)['end'];
 try {
     $pdo->beginTransaction();
     $fields = ['district', 'division', 'area', 'meeting_number', 'theme', 'meeting_date', 'start_time', 'end_time', 'timezone', 'mission', 'quote_text', 'quote_author', 'venue_details'];
-    $fields = array_merge($fields, ['wod_word', 'wod_meaning', 'wod_synonyms', 'wod_example', 'ballot_categories_json']);
+    $fields = array_merge($fields, ['wod_word', 'wod_meaning', 'wod_synonyms', 'wod_example', 'ballot_categories_json', 'agenda_order']);
     $values = array_map(static fn($field) => $meeting[$field], $fields);
     if ($id) {
         $check = $pdo->prepare('SELECT id FROM tiab_meetings WHERE id = ?');

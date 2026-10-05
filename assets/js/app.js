@@ -1,10 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     const orderDropdown = document.getElementById('orderby');
-    if (orderDropdown) {
-        orderDropdown.addEventListener('change', function () {
-            window.location.href = '?orderby=' + this.value;
-        });
-    }
 
     document.querySelectorAll('form[data-confirm]').forEach(form => {
         form.addEventListener('submit', event => {
@@ -14,6 +9,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('agenda-form');
     if (!form) return;
     const all = (selector, parent = form) => Array.from(parent.querySelectorAll(selector));
+    function reorderSections() {
+        const topicKeys = ['topics_intro', 'tt_speakers'];
+        const speechKeys = ['tmoe_featured_speaker_intro', 'prepared_speakers'];
+        const keys = orderDropdown.value === 'FS' ? [...speechKeys, ...topicKeys] : [...topicKeys, ...speechKeys];
+        const anchor = form.querySelector('.schedule-block[data-key="evaluation_handover"]');
+        const blocks = keys.map(key => form.querySelector(`.schedule-block[data-key="${key}"]`));
+        if (!anchor || blocks.some(block => !block)) return;
+        blocks.forEach(block => anchor.parentNode.insertBefore(block, anchor));
+        refreshTimes();
+    }
+    if (orderDropdown) orderDropdown.addEventListener('change', reorderSections);
     all('input[type="date"], input[type="time"]').forEach(input => {
         input.addEventListener('click', event => {
             if (input.disabled || input.readOnly || typeof input.showPicker !== 'function') return;

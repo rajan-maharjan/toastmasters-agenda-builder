@@ -50,9 +50,8 @@ function agendaTitle(array $meeting): string
     return 'Agenda for Meeting' . ($suffix !== '' ? ' ' . $suffix : '');
 }
 
-function agendaDefinitions(): array
+function agendaDefinitions(string $orderby = 'TT'): array
 {
-    $orderby = $_GET['orderby'] ?? 'TT';
 
     $tableTopicSection = [
         ['topics_intro', 'TMoE continues about theme and introduces the Table Topics Master', 'tt_master', '2 min'],
@@ -152,7 +151,7 @@ function buildAgenda(array $meeting): array
     $initial = $cursor;
     $label = tmoeLabel($start);
     $blocks = [];
-    foreach (agendaDefinitions() as $definition) {
+    foreach (agendaDefinitions($meeting['agenda_order'] ?? 'TT') as $definition) {
         [$key, $title, $role, $default] = $definition;
         $template = $title;                                 // keep the raw TMoE version
         $title = str_replace('TMoE', $label, $title); 

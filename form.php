@@ -9,6 +9,7 @@ if ($id > 0 && !$meeting) { header('Location: index.php'); exit; }
 $editMode = $meeting !== null;
 if (!$meeting) {
     $meeting = [
+        'agenda_order' => ($_GET['orderby'] ?? 'TT') === 'FS' ? 'FS' : 'TT',
         'district' => $settings['default_district'] ?? 'District 41',
         'division' => $settings['default_division'] ?? 'Division C',
         'area' => $settings['default_area'] ?? 'Area C1',

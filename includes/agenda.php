@@ -52,33 +52,52 @@ function agendaTitle(array $meeting): string
 
 function agendaDefinitions(): array
 {
-    return [
-        ['saa_intro', 'Sergeant at Arms - prepares the meeting and greets guests', 'saa', '3 mins'],
-        ['presiding_officer_intro', 'Presiding Officer calls the meeting to order and welcomes guests', 'presiding_officer', '3 mins'],
-        ['tmoe_intro', 'TMoE introduces the theme and meeting roles', 'tmoe', '3 mins'],
-        ['ge_intro', 'General Evaluator introduces the session and the TAG team', 'ge', '2 mins'],
-        ['timer_intro', 'Timer explains the role', 'timer', '1 min'],
-        ['ah_intro', 'Ah-Counter explains the role', 'ah_counter', '1 min'],
-        ['grammarian_intro', 'Grammarian explains the role and introduces the WOD', 'grammarian', '2 mins'],
-        ['ballot_intro', 'Ballot Counter explains voting rules', 'ballot_counter', '1 min'],
+    $orderby = $_GET['orderby'] ?? 'TT';
+
+    $tableTopicSection = [
         ['topics_intro', 'TMoE continues about theme and introduces the Table Topics Master', 'tt_master', '2 min'],
         ['tt_speakers', 'Table Topic Session', '', '', 'group'],
+    ];
+
+    $preparedSpeakerSection = [
         ['tmoe_featured_speaker_intro', 'TMoE continues the theme and introduces the prepared speakers', 'tmoe', '2 min'],
         ['prepared_speakers', 'Prepared Speech Session', '', '', 'group'],
-        ['evaluation_handover', 'TMoE calls for ballot collection and hands over to the General Evaluator', 'tmoe', '1 min'],
-        ['evaluation_break', 'Evaluation Break and TMoE continues on theme', 'tmoe', '5 min'],       
-        ['evaluators_intro', 'GE introduces the evaluators and calls for speech evaluations', 'ge', '1 min'],
-        ['evaluators', 'Evaluation Session', '', '', 'group'],
-        ['ballot_collection', 'GE calls for ballot collection', 'ballot_counter', '1 min'],
-        ['ah_report', 'GE calls for the Ah-Counter report', 'ah_counter', '1-2 min'],
-        ['grammarian_report', 'GE calls for the Grammarian report', 'grammarian', '1-2 mins'],
-        ['general_evaluation', 'GE provides meeting evaluations', 'ge', '3-5 mins'],
-        ['timer_report', 'GE calls for the Timer report', 'timer', '1-2 min'],
-        ['conclusion', 'GE returns control to the TMoE; TMoE concludes the theme', 'tmoe', '1 min'],
-        ['awards', 'Presentation of awards by the Ballot Counter', 'ballot_counter', '3 mins'],
-        ['adjourn', 'Presiding Officer adjourns the meeting', 'presiding_officer', '2 mins'],
-        ['networking', 'Networking and group photograph', '', '0 mins'],
     ];
+
+    if ($orderby === 'FS') {
+        $TTFeaturedSpeakerSection = array_merge($preparedSpeakerSection, $tableTopicSection);
+    } else {
+        $TTFeaturedSpeakerSection = array_merge($tableTopicSection, $preparedSpeakerSection);
+    }
+
+    return array_merge(
+        [
+            ['saa_intro', 'Sergeant at Arms - prepares the meeting and greets guests', 'saa', '3 mins'],
+            ['presiding_officer_intro', 'Presiding Officer calls the meeting to order and welcomes guests', 'presiding_officer', '3 mins'],
+            ['tmoe_intro', 'TMoE introduces the theme and meeting roles', 'tmoe', '3 mins'],
+            ['ge_intro', 'General Evaluator introduces the session and the TAG team', 'ge', '2 mins'],
+            ['timer_intro', 'Timer explains the role', 'timer', '1 min'],
+            ['ah_intro', 'Ah-Counter explains the role', 'ah_counter', '1 min'],
+            ['grammarian_intro', 'Grammarian explains the role and introduces the WOD', 'grammarian', '2 mins'],
+            ['ballot_intro', 'Ballot Counter explains voting rules', 'ballot_counter', '1 min'],
+        ],
+        $TTFeaturedSpeakerSection,        
+        [
+            ['evaluation_handover', 'TMoE calls for ballot collection and hands over to the General Evaluator', 'tmoe', '1 min'],
+            ['evaluation_break', 'Evaluation Break and TMoE continues on theme', 'tmoe', '5 min'],       
+            ['evaluators_intro', 'GE introduces the evaluators and calls for speech evaluations', 'ge', '1 min'],
+            ['evaluators', 'Evaluation Session', '', '', 'group'],
+            ['ballot_collection', 'GE calls for ballot collection', 'ballot_counter', '1 min'],
+            ['ah_report', 'GE calls for the Ah-Counter report', 'ah_counter', '1-2 min'],
+            ['grammarian_report', 'GE calls for the Grammarian report', 'grammarian', '1-2 mins'],
+            ['general_evaluation', 'GE provides meeting evaluations', 'ge', '3-5 mins'],
+            ['timer_report', 'GE calls for the Timer report', 'timer', '1-2 min'],
+            ['conclusion', 'GE returns control to the TMoE; TMoE concludes the theme', 'tmoe', '1 min'],
+            ['awards', 'Presentation of awards by the Ballot Counter', 'ballot_counter', '3 mins'],
+            ['adjourn', 'Presiding Officer adjourns the meeting', 'presiding_officer', '2 mins'],
+            ['networking', 'Networking and group photograph', '', '0 mins'],
+        ]
+    );
 }
 
 /** Use the upper bound of a minute range, never silently guess invalid input. */

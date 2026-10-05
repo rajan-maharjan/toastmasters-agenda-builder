@@ -1,5 +1,6 @@
 <?php
 $pageTitle = $pageTitle ?? 'Toastmasters Agenda Generator';
+$selectedOrder = ($_GET['orderby'] ?? 'TT') === 'FS' ? 'FS' : 'TT';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,6 +25,7 @@ $pageTitle = $pageTitle ?? 'Toastmasters Agenda Generator';
             font-family: 'Roboto', sans-serif;
             background-color: #f4f6f9;
         }
+        #orderby{border:2px solid #f2df74;background-color:#772432;color:#f2df74;}
     </style>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3806824823543446"
      crossorigin="anonymous"></script>
@@ -50,9 +52,9 @@ $pageTitle = $pageTitle ?? 'Toastmasters Agenda Generator';
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="navbar-brand">by keeping
-            <select name="orderby" id="orderby" onchange="window.location.href='?orderby=' + this.value;">
-                <option value="TT">Table Topic</option>
-                <option value="FS">Featured Speaker</option>
+            <select name="orderby" id="orderby" aria-label="First agenda segment">
+                <option value="TT" <?= $selectedOrder === 'TT' ? 'selected' : '' ?>>Table Topic</option>
+                <option value="FS" <?= $selectedOrder === 'FS' ? 'selected' : '' ?>>Featured Speaker</option>
             </select>
         at first
         </div>

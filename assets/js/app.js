@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const orderDropdown = document.getElementById('orderby');
+    if (orderDropdown) {
+        orderDropdown.addEventListener('change', function () {
+            window.location.href = '?orderby=' + this.value;
+        });
+    }
+
     document.querySelectorAll('form[data-confirm]').forEach(form => {
         form.addEventListener('submit', event => {
             if (!window.confirm(form.dataset.confirm)) event.preventDefault();

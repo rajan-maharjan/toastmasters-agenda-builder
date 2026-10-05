@@ -39,7 +39,6 @@ $selectedOrder = ($meeting['agenda_order'] ?? 'TT') === 'FS' ? 'FS' : 'TT';
       gtag('config', 'G-G3E817WNSG');
       //alert(jQuery('#orderby').value());
     </script>
-
 </head>
 <body>
 

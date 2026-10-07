@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/agenda_fields.php';
+require_once __DIR__.'/agenda_fields.php';
 $schedule = buildAgenda($meeting);
 $speakers = $meeting['prepared_speakers'] ?? [];
 $clubs = $meeting['clubs'] ?? [];

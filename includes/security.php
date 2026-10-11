@@ -115,10 +115,11 @@ function consumeLoginAttempt(string $address): bool
 }
 
 if (PHP_SAPI !== 'cli') {
-    set_exception_handler(static function (Throwable $error): void {
+    /*set_exception_handler(static function (Throwable $error): void {
         error_log((string)$error);
         securityReject(500, 'The request could not be completed. Please try again later.');
     });
+    */
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: DENY');
     header('Referrer-Policy: strict-origin-when-cross-origin');

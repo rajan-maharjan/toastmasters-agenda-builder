@@ -1,3 +1,4 @@
 /config/database.local.php
 /config/constant.php
+/config/db.php
 /tests/artifacts/

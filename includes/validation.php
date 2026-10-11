@@ -12,7 +12,7 @@ function validateAgendaInput(array $input): void
         'meeting_number' => 2000, 'theme' => 500, 'meeting_date' => 10, 'start_time' => 5, 'timezone' => 20,
         'mission' => 4000, 'quote_text' => 4000, 'quote_author' => 255, 'venue_details' => 4000,
         'wod_word' => 2000, 'wod_meaning' => 2000, 'wod_synonyms' => 2000, 'wod_example' => 2000,
-        'ballot_selection_present' => 1, 'agenda_order' => 2,
+        'agenda_selection_present' => 1, 'ballot_selection_present' => 1, 'agenda_order' => 2,
     ];
     if (isset($input['agenda_order']) && !in_array($input['agenda_order'], ['TT', 'FS'], true)) throw new InvalidArgumentException('Invalid agenda order.');
     $rows = [
@@ -32,6 +32,12 @@ function validateAgendaInput(array $input): void
     foreach ($input as $key => $value) {
         if (isset($fields[$key])) { $text($value, $fields[$key]); continue; }
         if ($key === 'roles' || $key === 'agenda_durations') { $map($value, $key === 'roles' ? 255 : 3); continue; }
+        if ($key === 'agenda_titles') { $map($value, 500); continue; }
+        if ($key === 'agenda_sections') {
+            if (!is_array($value) || count($value) > 8) throw new InvalidArgumentException('Invalid agenda selection.');
+            foreach ($value as $section) $text($section, 60);
+            continue;
+        }
         if ($key === 'ballot_categories') {
             if (!is_array($value) || count($value) > 4) throw new InvalidArgumentException('Invalid ballot selection.');
             foreach ($value as $category) $text($category, 60);

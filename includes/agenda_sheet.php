@@ -1,10 +1,11 @@
 <?php
 require_once __DIR__ . '/agenda_fields.php';
-$schedule = buildAgenda($meeting);
+$schedule = buildAgenda($meeting, $editable);
 $speakers = $meeting['prepared_speakers'] ?? [];
 $clubs = $meeting['clubs'] ?? [];
 ?>
 <section class="agenda-sheet <?= $editable ? 'is-editable' : '' ?>" aria-label="Meeting agenda">
+    <?php if ($editable): ?><input type="hidden" name="agenda_selection_present" value="1"><?php endif; ?>
     <div class="sheet-meta">
         <div class="district-fields">
             <?php foreach (['district' => 'District', 'division' => 'Division', 'area' => 'Area'] as $field => $label): ?>
@@ -60,17 +61,24 @@ $clubs = $meeting['clubs'] ?? [];
             <a class="sidebar-link" href="https://www.toastmasters.org">www.toastmasters.org</a>
         </aside>
         <div class="sheet-main">
+            <?php if ($editable): ?><p class="schedule-note">Check / Uncheck an agenda item to add/remove it from the preview and Print Agenda.</p><?php endif; ?>
             <table class="schedule-table" aria-label="Agenda schedule">
                 <colgroup><col class="time-col"><col class="item-col"><col class="role-col"><col class="duration-col"></colgroup>
                 <thead><tr><th>Time</th><th>Agenda Item</th><th>Role Taker</th><th>Duration</th></tr></thead>
                 <?php foreach ($schedule['blocks'] as $block): ?>
                     <tbody class="schedule-block" data-kind="<?= $block['kind'] ?>" data-key="<?= $block['key'] ?>">
                         <tr class="<?= $block['kind'] === 'group' ? 'segment-heading' : 'agenda-line' ?>">
-                            <td class="agenda-clock" data-clock><?= $block['time'] ?></td>
+                            <td class="agenda-clock">
+                                <?php if ($editable && in_array($block['key'], optionalAgendaKeys(), true)): ?>
+                                    <input style="float:left;margin-right:5px;" type="checkbox" data-section-toggle name="agenda_sections[]" value="<?= $block['key'] ?>" aria-label="Include <?= agendaEscape($block['title']) ?>" <?= $block['enabled'] ? 'checked' : '' ?>>
+                                <?php endif; ?><span data-clock><?= $block['enabled'] ? $block['time'] : '?' ?></span>
+                            </td>
                             <?php if ($block['kind'] === 'group'): ?>
                                 <th colspan="2" scope="row"><?= $block['title'] ?></th><td class="segment-total" data-total><?= $block['duration'] ?></td>
                             <?php else: ?>
-                                <td><?= agendaEscape($block['title']) ?></td>
+                                <td><?php if ($editable && in_array($block['key'], editableAgendaKeys(), true)): ?>
+                                    <?php sheetInput('agenda_titles[' . $block['key'] . ']', $block['title'], 'Agenda description', true, 'data-agenda-title maxlength="500" required'); ?>
+                                <?php else: ?><span data-agenda-title><?= agendaEscape($block['title']) ?></span><?php endif; ?></td>
                                 <td><?php if ($editable && $block['role']): ?>
                                     <input class="sheet-input role-input" data-role="<?= $block['role'] ?>" aria-label="<?= agendaEscape(str_replace('_', ' ', $block['role'])) ?> name" value="<?= agendaEscape($block['person']) ?>" placeholder="Name">
                                 <?php else: ?><span class="role-name"><?= agendaEscape($block['person']) ?></span><?php endif; ?></td>

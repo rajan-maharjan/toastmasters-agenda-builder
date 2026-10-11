@@ -14,7 +14,7 @@
 .meeting-clock .time-input:focus { color-scheme:light; }
 .meeting-clock input[name=timezone] { width:48px; }
 .duration-cell .rm-min-class{width:50px!important;}
-.sheet-input { display:block; width:100%; min-width:0; border:1px solid #f5e9a5; background:transparent; color:inherit; padding:5px 6px; border-radius:3px; font:inherit; line-height:1.35; }
+.sheet-input { display:block; width:100%; min-width:0; border:1px solid #772432; background:transparent; color:inherit; padding:5px 6px; border-radius:3px; font:inherit; line-height:1.35; }
 .sheet-input::placeholder { color:#9aa6b5; font-weight:400; }
 .sheet-input:hover:not([readonly]) { background:#00416506; border-color:#dce2e8; }
 .sheet-input:focus { outline:2px solid #e3c655; outline-offset:-1px; background:#fffcec; color:#243546; }
@@ -95,7 +95,7 @@
 .remove-entry:hover { color:#b42335; }
 .add-entry { border:0; background-color:#f2df74; color:#004165; font-weight:700; font-size:11px; padding:8px 2px 0; cursor:pointer; }
 .add-entry:hover { color:#ffffff; }
-.schedule-note { display:flex; justify-content:space-between; gap:10px; padding:10px 10px; color:#ffffff; background-color:#772432; font-size:12px; border-bottom:1px solid #dde3ea; }
+.schedule-note { display:flex; justify-content:space-between; gap:10px; padding:10px 10px; color:#772432;font-style:italic; font-size:12px; border-bottom:1px solid #dde3ea; }
 .ballot-sheet { padding:14px 10px 18px; }
 .ballot-sheet > h2 { font-size:12px; margin:0 0 8px; }.ballot-sheet > h2 span { color:#7b8796; font-size:10px; font-weight:400; margin-left:8px; }
 .ballot-row { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:5px; }
@@ -122,3 +122,6 @@
     .ballot-row { break-inside:avoid; }.participant-row, .agenda-line { break-inside:avoid; }
     .sheet-input { border:0; padding:1px; }
 }
+
+.schedule-block.is-excluded { opacity:.55; }
+.schedule-block [data-section-toggle] { display:block; margin-bottom:4px; cursor:pointer; }

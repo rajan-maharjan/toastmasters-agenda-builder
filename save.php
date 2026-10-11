@@ -15,6 +15,16 @@ foreach (['district', 'division', 'area', 'meeting_number', 'theme', 'meeting_da
     $meeting[$field] = trim((string)($_POST[$field] ?? ''));
 }
 $errors = [];
+$meeting['agenda_options'] = [
+    'included' => isset($_POST['agenda_selection_present']) ? array_values(array_intersect(optionalAgendaKeys(), $_POST['agenda_sections'] ?? [])) : optionalAgendaKeys(),
+    'titles' => array_intersect_key($_POST['agenda_titles'] ?? [], array_flip(editableAgendaKeys())),
+];
+foreach ($meeting['agenda_options']['titles'] as $key => &$title) {
+    $title = trim($title);
+    if ($title === '' && agendaSectionEnabled($meeting, $key)) $errors[] = 'Enter a description for each included editable agenda item.';
+}
+unset($title);
+$meeting['agenda_options_json'] = json_encode($meeting['agenda_options'], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
 $categories = isset($_POST['ballot_selection_present']) ? ($_POST['ballot_categories'] ?? []) : array_keys(agendaBallots([]));
 $meeting['ballot_categories'] = is_array($categories) ? array_values(array_intersect(array_keys(agendaBallots([])), array_filter($categories, 'is_string'))) : [];
 $meeting['ballot_categories_json'] = json_encode($meeting['ballot_categories'], JSON_THROW_ON_ERROR);
@@ -39,6 +49,9 @@ foreach (agendaDefinitions() as $definition) {
     if ($role) { $meeting['roles'][$role] = trim($_POST['roles'][$role] ?? ''); }
     if (($definition[4] ?? '') === 'group') continue;
     $duration = trim($_POST['agenda_durations'][$key] ?? (string)durationMinutes($default));
+    if (!agendaSectionEnabled($meeting, $key)) {
+        try { wholeDuration($duration); } catch (InvalidArgumentException $e) { $duration = (string)durationMinutes($default); }
+    }
     try { wholeDuration($duration); } catch (InvalidArgumentException $e) { $errors[] = $title . ': ' . $e->getMessage(); }
     $meeting['agenda_durations'][$key] = $duration;
 }
@@ -65,17 +78,17 @@ $meeting['prepared_speakers'] = [];
 foreach ($_POST['speakers'] ?? [] as $key => $row) {
     $speaker = [];
     foreach (['speaker_name', 'topic', 'level', 'pathways', 'duration'] as $field) { $speaker[$field] = trim($row[$field] ?? ''); }
-    if ($speaker['speaker_name'] === '') { $errors[] = 'Enter a name for each featured speaker, or remove unused rows.'; }
+    if (agendaSectionEnabled($meeting, 'prepared_speakers') && $speaker['speaker_name'] === '') { $errors[] = 'Enter a name for each featured speaker, or remove unused rows.'; }
     try {
         speakerSlotMinutes($speaker['duration']);
-    } catch (InvalidArgumentException $e) { $errors[] = 'Featured speaker: ' . $e->getMessage(); }
+    } catch (InvalidArgumentException $e) { if (agendaSectionEnabled($meeting, 'prepared_speakers')) $errors[] = 'Featured speaker: ' . $e->getMessage(); else $speaker['duration'] = '7'; }
     $meeting['prepared_speakers'][$key] = $speaker;
 }
 $meeting['tt_speakers'] = [];
 foreach ($_POST['tt_speakers'] ?? [] as $row) {
     try {
         if (!in_array(trim($row['duration'] ?? ''), ['1-2', '2'], true)) throw new InvalidArgumentException('Table Topics duration is 1-2 min.');
-    } catch (InvalidArgumentException $e) { $errors[] = 'Table Topics: ' . $e->getMessage(); }
+    } catch (InvalidArgumentException $e) { if (agendaSectionEnabled($meeting, 'tt_speakers')) $errors[] = 'Table Topics: ' . $e->getMessage(); }
     $meeting['tt_speakers'][] = ['speaker_name' => trim($row['speaker_name'] ?? '') ?: 'Given during the meeting', 'duration' => '1-2'];
 }
 $meeting['evaluators'] = [];
@@ -83,12 +96,12 @@ foreach ($_POST['evaluators'] ?? [] as $row) {
     $name = trim($row['evaluator_name'] ?? '');
     $speakerKey = $row['speaker_index'] ?? null;
     $speaker = $speakerKey !== null ? ($meeting['prepared_speakers'][$speakerKey]['speaker_name'] ?? '') : trim($row['speaker_name'] ?? '');
-    if ($name === '') { $errors[] = 'Enter a name for each evaluator, or remove unused rows.'; }
-    if ($speaker === '' || !in_array($speaker, array_column($meeting['prepared_speakers'], 'speaker_name'), true)) { $errors[] = 'Each evaluator must select a speaker from Featured Speakers.'; }
+    if (agendaSectionEnabled($meeting, 'evaluators') && $name === '') { $errors[] = 'Enter a name for each evaluator, or remove unused rows.'; }
+    if (agendaSectionEnabled($meeting, 'evaluators') && ($speaker === '' || !in_array($speaker, array_column($meeting['prepared_speakers'], 'speaker_name'), true))) { $errors[] = 'Each evaluator must select a speaker from Featured Speakers.'; }
     $duration = trim($row['duration'] ?? '');
     try {
         speakerSlotMinutes($duration);
-    } catch (InvalidArgumentException $e) { $errors[] = 'Evaluator: ' . $e->getMessage(); }
+    } catch (InvalidArgumentException $e) { if (agendaSectionEnabled($meeting, 'evaluators')) $errors[] = 'Evaluator: ' . $e->getMessage(); else $duration = '3'; }
     $meeting['evaluators'][] = ['evaluator_name' => $name, 'speaker_name' => $speaker, 'duration' => $duration];
 }
 if ($errors) {
@@ -102,7 +115,7 @@ $meeting['end_time'] = buildAgenda($meeting)['end'];
 try {
     $pdo->beginTransaction();
     $fields = ['district', 'division', 'area', 'meeting_number', 'theme', 'meeting_date', 'start_time', 'end_time', 'timezone', 'mission', 'quote_text', 'quote_author', 'venue_details'];
-    $fields = array_merge($fields, ['wod_word', 'wod_meaning', 'wod_synonyms', 'wod_example', 'ballot_categories_json', 'agenda_order']);
+    $fields = array_merge($fields, ['wod_word', 'wod_meaning', 'wod_synonyms', 'wod_example', 'ballot_categories_json', 'agenda_order', 'agenda_options_json']);
     $values = array_map(static fn($field) => $meeting[$field], $fields);
     if ($id) {
         $check = $pdo->prepare('SELECT id FROM tiab_meetings WHERE id = ?');

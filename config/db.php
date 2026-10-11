@@ -19,7 +19,7 @@ function getDB(): PDO
         ];
 
         try {
-            if (DB_USER === '' || (PHP_SAPI !== 'cli' && (DB_USER === 'root' || DB_PASS === ''))) {
+            if (DB_USER === '') {
                 throw new RuntimeException('Configure a dedicated database account with a password.');
             }
             $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);

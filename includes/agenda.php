@@ -72,20 +72,20 @@ function agendaDefinitions(string $orderby = 'TT'): array
     return array_merge(
         [
             ['saa_intro', 'Sergeant at Arms - prepares the meeting and greets guests', 'saa', '3 mins'],
-            ['presiding_officer_intro', 'Presiding Officer calls the meeting to order and welcomes guests', 'presiding_officer', '3 mins'],
-            ['tmoe_intro', 'TMoE introduces the theme and meeting roles', 'tmoe', '3 mins'],
+            ['presiding_officer_intro', 'Presiding Officer calls the meeting to order, welcome guests and hand overs to TMoE', 'presiding_officer', '3 mins'],
+            ['tmoe_intro', 'TMoE introduces the theme and meeting sections', 'tmoe', '3 mins'],
             ['ge_intro', 'General Evaluator introduces the session and the TAG team', 'ge', '2 mins'],
             ['timer_intro', 'Timer explains the role', 'timer', '1 min'],
             ['ah_intro', 'Ah-Counter explains the role', 'ah_counter', '1 min'],
-            ['grammarian_intro', 'Grammarian explains the role and introduces the WOD', 'grammarian', '2 mins'],
+            ['grammarian_intro', 'Grammarian explains the role and introduces WOD', 'grammarian', '2 mins'],
             ['ballot_intro', 'Ballot Counter explains voting rules', 'ballot_counter', '1 min'],
         ],
         $TTFeaturedSpeakerSection,        
         [
-            ['evaluation_handover', 'TMoE calls for ballot collection and hands over to the General Evaluator', 'tmoe', '1 min'],
+            ['evaluation_handover', 'TMoE calls for ballot collection and Talk about Theme', 'tmoe', '1 min'],
             ['evaluation_break', 'Evaluation Break and TMoE continues on theme', 'tmoe', '5 min'],       
-            ['evaluators_intro', 'GE introduces the evaluators and calls for speech evaluations', 'ge', '1 min'],
-            ['evaluators', 'Evaluation Session', '', '', 'group'],
+            ['evaluators_intro', 'GE introduces the evaluation session', 'ge', '1 min'],
+            ['evaluators', 'Prepared Speech Evaluation Session', '', '', 'group'],
             ['ballot_collection', 'GE calls for ballot collection', 'ballot_counter', '1 min'],
             ['ah_report', 'GE calls for the Ah-Counter report', 'ah_counter', '1-2 min'],
             ['grammarian_report', 'GE calls for the Grammarian report', 'grammarian', '1-2 mins'],
@@ -141,7 +141,28 @@ function clockTime(int $minutes): string
     return sprintf('%02d:%02d', intdiv($minutes, 60), $minutes % 60);
 }
 
-function buildAgenda(array $meeting): array
+function optionalAgendaKeys(): array
+{
+    return ['tmoe_featured_speaker_intro', 'prepared_speakers', 'topics_intro', 'tt_speakers', 'evaluation_break', 'evaluators_intro', 'evaluators', 'ballot_collection'];
+}
+
+function editableAgendaKeys(): array
+{
+    return ['tmoe_featured_speaker_intro', 'topics_intro', 'evaluation_break'];
+}
+
+function agendaOptions(array $meeting): array
+{
+    return $meeting['agenda_options'] ?? (json_decode($meeting['agenda_options_json'] ?? 'null', true) ?: []);
+}
+
+function agendaSectionEnabled(array $meeting, string $key): bool
+{
+    $options = agendaOptions($meeting);
+    return !in_array($key, optionalAgendaKeys(), true) || !isset($options['included']) || in_array($key, $options['included'], true);
+}
+
+function buildAgenda(array $meeting, bool $includeExcluded = false): array
 {
 
     $start = substr($meeting['start_time'] ?? '18:00', 0, 5);
@@ -153,8 +174,11 @@ function buildAgenda(array $meeting): array
     $blocks = [];
     foreach (agendaDefinitions($meeting['agenda_order'] ?? 'TT') as $definition) {
         [$key, $title, $role, $default] = $definition;
+        $enabled = agendaSectionEnabled($meeting, $key);
+        if (!$enabled && !$includeExcluded) continue;
+        if (in_array($key, editableAgendaKeys(), true)) $title = agendaOptions($meeting)['titles'][$key] ?? $title;
         $template = $title;                                 // keep the raw TMoE version
-        $title = str_replace('TMoE', $label, $title); 
+        $title = preg_replace('/\bTMo[EMD]\b/', $label, $title); 
         $isGroup = ($definition[4] ?? '') === 'group';
         $rows = [];
         if ($isGroup) {
@@ -174,7 +198,8 @@ function buildAgenda(array $meeting): array
             $duration = $meeting['agenda_durations'][$key] ?? $default;
             $total = durationMinutes($duration);
         }
-        $blocks[] = ['key' => $key, 'title' => $title, 'role' => $role, 'kind' => $isGroup ? 'group' : 'item',
+        if (!$enabled) $total = 0;
+        $blocks[] = ['enabled' => $enabled, 'template' => $template, 'key' => $key, 'title' => $title, 'role' => $role, 'kind' => $isGroup ? 'group' : 'item',
             'person' => $meeting['roles'][$role] ?? '', 'duration' => $duration, 'minutes' => $total,
             'time' => clockTime($cursor), 'rows' => $rows];
         $cursor += $total;

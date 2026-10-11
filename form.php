@@ -29,6 +29,7 @@ $errors = $hasDraft ? ($_SESSION['errors'] ?? []) : [];
 if ($hasDraft) {
     $draft = $_SESSION['form_data'];
     $durationDraft = true;
+    if (isset($draft['agenda_selection_present'])) $draft['agenda_options'] = ['included' => $draft['agenda_sections'] ?? [], 'titles' => $draft['agenda_titles'] ?? []];
     if (isset($draft['ballot_selection_present'])) $draft['ballot_categories'] = $draft['ballot_categories'] ?? [];
     $draft['prepared_speakers'] = $draft['speakers'] ?? [];
     foreach (['clubs', 'tt_speakers', 'evaluators', 'roles', 'agenda_durations'] as $key) { $draft[$key] = $draft[$key] ?? []; }

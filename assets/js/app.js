@@ -53,10 +53,34 @@ document.addEventListener('DOMContentLoaded', () => {
     function refreshTimes() {
         const start = document.getElementById('start_time').value;
         const validStart = /^([01]\d|2[0-3]):[0-5]\d$/.test(start);
+        if (validStart) {
+            const label = start < '12:00' ? 'TMoM' : (start < '17:00' ? 'TMoD' : 'TMoE');
+            all('[data-agenda-title]').forEach(element => {
+                const property = element.matches('input, textarea') ? 'value' : 'textContent';
+                element[property] = element[property].replace(/\bTMo[EMD]\b/g, label);
+            });
+        }
         const [h, m] = start.split(':').map(Number);
         const initial = validStart ? h * 60 + m : NaN;
         let cursor = initial;
         all('.schedule-block').forEach(block => {
+            const toggle = block.querySelector('[data-section-toggle]');
+            const included = !toggle || toggle.checked;
+            block.classList.toggle('is-excluded', !included);
+            all('input:not([data-section-toggle]), select, textarea', block).forEach(input => {
+                if (input.dataset.sectionRequired === undefined) input.dataset.sectionRequired = input.required ? '1' : '0';
+                input.required = included && input.dataset.sectionRequired === '1';
+                if (input.dataset.sectionPattern === undefined) input.dataset.sectionPattern = input.getAttribute('pattern') || '';
+                if (included && input.dataset.sectionPattern) input.setAttribute('pattern', input.dataset.sectionPattern);
+                else if (!included) input.removeAttribute('pattern');
+                if (!included) input.setCustomValidity('');
+            });
+            if (!included) {
+                block.querySelector('[data-clock]').textContent = '?';
+                const total = block.querySelector('[data-total]');
+                if (total) total.textContent = 'Excluded';
+                return;
+            }
             block.querySelector('[data-clock]').textContent = Number.isFinite(cursor) ? clock(cursor) : '--:--';
             const minutes = all('[data-duration]', block).reduce((sum, input) => sum + duration(input), 0);
             const total = block.querySelector('[data-total]');
@@ -196,6 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!form.checkValidity()) { event.preventDefault(); form.reportValidity(); }
     });
     form.addEventListener('change', event => {
+        if (event.target.matches('[data-section-toggle]')) refreshTimes();
         if (event.target.matches('[data-club-select]')) refreshClubs();
         if (event.target.id === 'start_time') refreshTimes();
     });

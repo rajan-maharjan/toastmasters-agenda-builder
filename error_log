@@ -1,0 +1,32 @@
+[05-Oct-2026 20:30:22 Asia/Dubai] PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'agenda_order' in 'SET' in /home/rajanmah/public_html/agenda-builder/save.php:112
+Stack trace:
+#0 /home/rajanmah/public_html/agenda-builder/save.php(112): PDO->prepare('UPDATE tiab_mee...')
+#1 {main}
+[05-Oct-2026 20:30:42 Asia/Dubai] PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'agenda_order' in 'SET' in /home/rajanmah/public_html/agenda-builder/save.php:112
+Stack trace:
+#0 /home/rajanmah/public_html/agenda-builder/save.php(112): PDO->prepare('UPDATE tiab_mee...')
+#1 {main}
+[05-Oct-2026 20:32:33 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"103.38.198.54","agenda_id":23,"time":"2026-10-05T16:32:33+00:00"}
+[07-Oct-2026 14:24:43 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"49.244.240.95","agenda_id":21,"time":"2026-10-07T10:24:43+00:00"}
+[07-Oct-2026 20:27:57 Asia/Dubai] agenda_security {"event":"agenda_deleted","ip":"103.38.198.54","agenda_id":11,"time":"2026-10-07T16:27:57+00:00"}
+[08-Oct-2026 11:45:58 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"27.34.70.195","agenda_id":21,"time":"2026-10-08T07:45:58+00:00"}
+[08-Oct-2026 11:48:26 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"27.34.70.195","agenda_id":21,"time":"2026-10-08T07:48:26+00:00"}
+[08-Oct-2026 11:49:41 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"27.34.70.195","agenda_id":21,"time":"2026-10-08T07:49:41+00:00"}
+[08-Oct-2026 12:32:41 Asia/Dubai] agenda_security {"event":"csrf_rejected","ip":"27.34.70.195","agenda_id":null,"time":"2026-10-08T08:32:41+00:00"}
+[08-Oct-2026 12:33:37 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"27.34.70.195","agenda_id":21,"time":"2026-10-08T08:33:37+00:00"}
+[08-Oct-2026 12:53:03 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"27.34.111.189","agenda_id":24,"time":"2026-10-08T08:53:03+00:00"}
+[08-Oct-2026 13:00:21 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"27.34.111.189","agenda_id":24,"time":"2026-10-08T09:00:21+00:00"}
+[08-Oct-2026 13:02:06 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"27.34.111.189","agenda_id":24,"time":"2026-10-08T09:02:06+00:00"}
+[08-Oct-2026 13:03:28 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"27.34.111.189","agenda_id":24,"time":"2026-10-08T09:03:28+00:00"}
+[08-Oct-2026 13:56:57 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"27.34.111.189","agenda_id":24,"time":"2026-10-08T09:56:57+00:00"}
+[09-Oct-2026 12:08:36 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"27.34.68.41","agenda_id":21,"time":"2026-10-09T08:08:36+00:00"}
+[10-Oct-2026 17:02:51 Asia/Dubai] agenda_security {"event":"csrf_rejected","ip":"202.51.89.251","agenda_id":null,"time":"2026-10-10T13:02:51+00:00"}
+[10-Oct-2026 17:03:33 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"202.51.89.251","agenda_id":25,"time":"2026-10-10T13:03:33+00:00"}
+[10-Oct-2026 17:19:22 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"202.51.89.251","agenda_id":26,"time":"2026-10-10T13:19:22+00:00"}
+[10-Oct-2026 17:23:08 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"202.51.89.251","agenda_id":27,"time":"2026-10-10T13:23:08+00:00"}
+[10-Oct-2026 17:31:48 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"202.51.89.251","agenda_id":27,"time":"2026-10-10T13:31:48+00:00"}
+[10-Oct-2026 19:27:44 Asia/Dubai] agenda_security {"event":"csrf_rejected","ip":"113.199.225.122","agenda_id":null,"time":"2026-10-10T15:27:44+00:00"}
+[10-Oct-2026 19:28:48 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"113.199.225.122","agenda_id":28,"time":"2026-10-10T15:28:48+00:00"}
+[10-Oct-2026 19:31:38 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"113.199.225.122","agenda_id":29,"time":"2026-10-10T15:31:38+00:00"}
+[10-Oct-2026 19:36:36 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"113.199.225.122","agenda_id":30,"time":"2026-10-10T15:36:36+00:00"}
+[10-Oct-2026 19:46:22 Asia/Dubai] agenda_security {"event":"agenda_saved","ip":"113.199.225.122","agenda_id":30,"time":"2026-10-10T15:46:22+00:00"}

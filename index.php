@@ -7,7 +7,18 @@
     <title>Redirecting...</title>
     <script>
     window.location.replace("<?php echo SITE_PATH?>form.php");
+    
+    
 </script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-G3E817WNSG"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-G3E817WNSG');
+     
+    </script>
 
 </head>
 <body>

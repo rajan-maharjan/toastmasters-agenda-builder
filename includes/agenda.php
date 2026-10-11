@@ -132,7 +132,13 @@ function selectedBallots(array $meeting): array
 {
     $all = array_keys(agendaBallots($meeting));
     $selected = $meeting['ballot_categories'] ?? json_decode($meeting['ballot_categories_json'] ?? 'null', true);
-    return is_array($selected) ? array_values(array_intersect($all, $selected)) : $all;
+    if (is_array($selected)) return array_values(array_intersect($all, $selected));
+    $defaults = ['Better Role Takers'];
+    foreach (['Better Evaluator' => 'evaluators', 'Better Featured Speaker' => 'prepared_speakers', 'Better Table Topic Speaker' => 'tt_speakers'] as $label => $key) {
+        $candidates = agendaBallots($meeting)[$label];
+        if ($candidates && agendaSectionEnabled($meeting, $key)) $defaults[] = $label;
+    }
+    return $defaults;
 }
 
 function clockTime(int $minutes): string

@@ -118,7 +118,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const role = key => form.querySelector(`[data-role-value="${key}"]`).value;
         const candidates = [[`Timer: ${role('timer')}`, `Ah-Counter: ${role('ah_counter')}`, `Grammarian: ${role('grammarian')}`],
             names('evaluators').filter(Boolean), names('prepared_speakers').filter(Boolean), names('tt_speakers').map((name, index) => `TT Speaker ${index + 1}`)];
+        const sectionKeys = [null, 'evaluators', 'prepared_speakers', 'tt_speakers'];
         all('.ballot-block ul').forEach((list, index) => {
+            const selection = list.closest('.ballot-block').querySelector('input[type="checkbox"]');
+            const key = sectionKeys[index];
+            if (selection && key) {
+                const enabled = form.querySelector(`.schedule-block[data-key="${key}"] [data-section-toggle]`)?.checked !== false;
+                const available = enabled && candidates[index].length > 0;
+                const previous = selection.dataset.available;
+                if ((previous === undefined && selection.dataset.ballotExplicit !== '1') || (previous !== undefined && previous !== String(available))) {
+                    selection.checked = available;
+                }
+                selection.dataset.available = String(available);
+            }
             list.replaceChildren();
             candidates[index].forEach(name => {
                 const li = document.createElement('li');
@@ -220,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!form.checkValidity()) { event.preventDefault(); form.reportValidity(); }
     });
     form.addEventListener('change', event => {
-        if (event.target.matches('[data-section-toggle]')) refreshTimes();
+        if (event.target.matches('[data-section-toggle]')) { refreshTimes(); refreshBallots(); }
         if (event.target.matches('[data-club-select]')) refreshClubs();
         if (event.target.id === 'start_time') refreshTimes();
     });

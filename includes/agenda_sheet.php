@@ -128,7 +128,7 @@ $clubs = $meeting['clubs'] ?? [];
                 <div class="ballot-row">
                     <?php foreach (agendaBallots($meeting) as $label => $candidates): ?>
                         <?php if (!$editable && !in_array($label, $selected, true)) continue; ?>
-                        <div class="ballot-block"><h3><?php if ($editable): ?><label><input type="checkbox" name="ballot_categories[]" value="<?= agendaEscape($label) ?>" <?= in_array($label, $selected, true) ? 'checked' : '' ?>> <?= $label ?></label><?php else: ?><?= $label ?><?php endif; ?></h3><ul>
+                        <div class="ballot-block"><h3><?php if ($editable): ?><label><input type="checkbox" data-ballot-explicit="<?= isset($meeting['ballot_categories']) || is_array(json_decode($meeting['ballot_categories_json'] ?? 'null', true)) ? '1' : '0' ?>" name="ballot_categories[]" value="<?= agendaEscape($label) ?>" <?= in_array($label, $selected, true) ? 'checked' : '' ?>> <?= $label ?></label><?php else: ?><?= $label ?><?php endif; ?></h3><ul>
                             <?php foreach ($candidates as $candidate): ?><li><span class="ballot-checkbox"></span><span><?= agendaEscape($candidate) ?></span></li><?php endforeach; ?>
                         </ul></div>
                     <?php endforeach; ?>

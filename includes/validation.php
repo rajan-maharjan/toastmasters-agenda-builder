@@ -31,6 +31,7 @@ function validateAgendaInput(array $input): void
     if (strlen(serialize($input)) > 65536) throw new InvalidArgumentException('Agenda form is too large.');
     foreach ($input as $key => $value) {
         if (isset($fields[$key])) { $text($value, $fields[$key]); continue; }
+        if ($key === 'role_labels') { $map($value, 700); continue; }
         if ($key === 'roles' || $key === 'agenda_durations') { $map($value, $key === 'roles' ? 255 : 3); continue; }
         if ($key === 'agenda_titles') { $map($value, 500); continue; }
         if ($key === 'agenda_sections') {

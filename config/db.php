@@ -103,6 +103,31 @@ function getActiveClubs(): array
 /**
  * Get full meeting details
  */
+function getRoleMembers(): array
+{
+    $members = [];
+    foreach (getDB()->query("SELECT member_id, full_name FROM tin_members WHERE member_id IS NOT NULL AND member_id <> '' AND full_name IS NOT NULL AND TRIM(full_name) <> '' ORDER BY full_name, member_id") as $member) {
+        $members[(string)$member['member_id']] = $member;
+    }
+    $links = getDB()->query("SELECT DISTINCT m.member_id, a.club_id, c.club_name FROM tin_members_club_role a JOIN tin_members m ON m.member_id = a.member_id JOIN tin_clubs c ON c.club_id = a.club_id ORDER BY c.club_name, a.club_id");
+    foreach ($links as $link) {
+        $key = (string)$link['member_id'];
+        if (!isset($members[$key])) continue;
+        $members[$key]['club_ids'][] = (string)$link['club_id'];
+        $members[$key]['club_name'] ??= $link['club_name'];
+    }
+    $labels = [];
+    foreach ($members as &$member) {
+        $member['club_ids'] = array_values(array_unique($member['club_ids'] ?? []));
+        $member['club_name'] ??= 'No club';
+        $label = $member['full_name'] . ' (' . $member['club_name'] . ')';
+        $labels[$label] = ($labels[$label] ?? 0) + 1;
+        $member['label'] = $label . ($labels[$label] > 1 ? ' (' . $labels[$label] . ')' : '');
+    }
+    unset($member);
+    return $members;
+}
+
 function getMeetingFull(int $id): ?array
 {
     $pdo = getDB();
@@ -122,11 +147,15 @@ function getMeetingFull(int $id): ?array
     $meeting['officers'] = $stmt->fetchAll();
 
     // Get functional roles
-    $stmt = $pdo->prepare("SELECT role_key, person_name FROM tiab_functional_roles WHERE meeting_id = ?");
+    $stmt = $pdo->prepare("SELECT r.role_key, r.member_id, COALESCE(m.full_name, r.person_name) AS person_name, m.intro FROM tiab_functional_roles r LEFT JOIN tin_members m ON m.member_id = r.member_id WHERE r.meeting_id = ?");
     $stmt->execute([$id]);
     $roles = [];
+    $meeting['role_member_ids'] = [];
+    $meeting['role_intros'] = [];
     while ($row = $stmt->fetch()) {
-        $roles[$row['role_key']] = $row['person_name'];
+        $roles[$row['role_key']] = $row['person_name'] ?? '';
+        $meeting['role_member_ids'][$row['role_key']] = $row['member_id'] ?? '';
+        $meeting['role_intros'][$row['role_key']] = $row['intro'] ?? '';
     }
     $meeting['roles'] = $roles;
 

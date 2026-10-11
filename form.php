@@ -4,6 +4,7 @@ $id = requestId($_GET, 'id', true) ?? 0;
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/agenda.php';
 $settings = getAppSettings();
+$roleMembers = getRoleMembers();
 $meeting = $id > 0 ? getMeetingFull($id) : null;
 if ($id > 0 && !$meeting) { header('Location: index.php'); exit; }
 $editMode = $meeting !== null;
@@ -33,6 +34,8 @@ if ($hasDraft) {
     if (isset($draft['ballot_selection_present'])) $draft['ballot_categories'] = $draft['ballot_categories'] ?? [];
     $draft['prepared_speakers'] = $draft['speakers'] ?? [];
     foreach (['clubs', 'tt_speakers', 'evaluators', 'roles', 'agenda_durations'] as $key) { $draft[$key] = $draft[$key] ?? []; }
+    $draft['role_member_ids'] = $draft['roles'];
+    foreach ($draft['roles'] as $role => $memberId) $draft['roles'][$role] = $roleMembers[$memberId]['full_name'] ?? ($draft['role_labels'][$role] ?? '');
     $meeting = array_replace($meeting, $draft);
     // Render invalid input intact, using valid defaults only for the initial schedule calculation.
     $invalidDurations = $meeting['agenda_durations'];
@@ -69,7 +72,7 @@ require __DIR__ . '/includes/header.php';
     <div><h1><?= $pageTitle ?></h1><p>Edit the sheet below. Times update as you change durations.</p></div>
     <div class="builder-actions"><button type="submit" form="agenda-form" class="btn btn-primary">Save &amp; Preview</button></div>
 </div>
-<?php if ($errors): ?><div class="alert alert-danger" role="alert"><strong>Please check the agenda:</strong><ul><?php foreach ($errors as $error): ?><li><?= agendaEscape($error) ?></li><?php endforeach; ?></ul></div><?php endif; ?>
+<?php if ($errors): ?><div id="server-validation-errors" class="alert alert-danger" role="alert"><strong>Please check the agenda:</strong><ul><?php foreach ($errors as $error): ?><li><?= agendaEscape($error) ?></li><?php endforeach; ?></ul></div><?php endif; ?>
 <form action="save.php" method="POST" id="agenda-form">
     <?= csrfField() ?>
     <?php if ($editMode): ?><input type="hidden" name="meeting_id" value="<?= $id ?>"><?php endif; ?>

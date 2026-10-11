@@ -125,3 +125,23 @@
 
 .schedule-block.is-excluded { opacity:.55; }
 .schedule-block [data-section-toggle] { display:block; margin-bottom:4px; cursor:pointer; }
+
+#new-member-dialog { max-width:520px; width:90%; border:1px solid #ccd4df; border-radius:8px; padding:22px; }
+#new-member-dialog label { display:block; margin:10px 0; }
+#new-member-dialog input, #new-member-dialog select, #new-member-dialog textarea { display:block; width:100%; padding:6px; }
+#new-member-dialog::backdrop { background:#0006; }
+
+.agenda-print-footer { display:none; }
+@media print { .agenda-print-footer { display:block; text-align:left; margin-top:5mm; font:8pt Arial,sans-serif; color:#000; } }
+
+#role-member-results { position:fixed; z-index:2000; max-height:280px; overflow-y:auto; background:white; border:1px solid #b7c4d2; border-radius:5px; box-shadow:0 5px 18px #0003; }
+#role-member-results button { display:block; width:100%; border:0; background:white; padding:9px 12px; text-align:left; color:#16334b; font-size:13px; }
+#role-member-results button:hover, #role-member-results button[aria-selected="true"] { background:#e6effa; }
+#role-member-results button:last-child { position:sticky; bottom:0; border-top:1px solid #ccd6e0; color:#772432; font-weight:bold; }
+@media print { #role-member-results, #new-member-dialog { display:none !important; } }
+
+.agenda-validation-control { display:block; flex:1; min-width:0; }
+.agenda-field-error { display:block; color:#b42335; font-size:11px; line-height:1.3; margin-top:3px; white-space:normal; font-weight:400; }
+.agenda-invalid { border:1px solid #b42335 !important; background:#fff4f4 !important; }
+.validation-error-link { border:0; background:none; padding:0; text-align:left; color:inherit; text-decoration:underline; cursor:pointer; }
+@media print { .agenda-field-error { display:none !important; } }

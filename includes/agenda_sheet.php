@@ -80,7 +80,7 @@ $clubs = $meeting['clubs'] ?? [];
                                     <?php sheetInput('agenda_titles[' . $block['key'] . ']', $block['title'], 'Agenda description', true, 'data-agenda-title maxlength="500" required'); ?>
                                 <?php else: ?><span data-agenda-title><?= agendaEscape($block['title']) ?></span><?php endif; ?></td>
                                 <td><?php if ($editable && $block['role']): ?>
-                                    <input class="sheet-input role-input" data-role="<?= $block['role'] ?>" aria-label="<?= agendaEscape(str_replace('_', ' ', $block['role'])) ?> name" value="<?= agendaEscape($block['person']) ?>" placeholder="Name">
+                                    <input class="sheet-input role-input" required role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="role-member-results" name="role_labels[<?= $block['role'] ?>]" data-role="<?= $block['role'] ?>" aria-label="<?= agendaEscape(str_replace('_', ' ', $block['role'])) ?> name" data-member-id="<?= agendaEscape($meeting['role_member_ids'][$block['role']] ?? '') ?>" value="<?= agendaEscape($block['person']) ?>" placeholder="Search member/club name" autocomplete="off">
                                 <?php else: ?><span class="role-name"><?= agendaEscape($block['person']) ?></span><?php endif; ?></td>
                                 <td>
                                     <?php if($block['key']!='networking'): ?>    
@@ -145,6 +145,21 @@ $clubs = $meeting['clubs'] ?? [];
     <?php foreach (clubOfficerRoles() as $role => $label): ?>
         <template id="template-officer-<?= $role ?>"><?php sheetClubOfficer('__INDEX__', [], $role, $label, true); ?></template>
     <?php endforeach; ?>
+    <dialog id="new-member-dialog">
+        <h2>Add a new member</h2>
+        <p>Use the membership ID from Toastmasters Portal. The member will be linked to the selected agenda club.</p>
+        <label>Member ID from TI * <input data-new-member="member_id" inputmode="numeric" maxlength="10"></label>
+        <label>Full name * <input data-new-member="full_name" maxlength="500"></label>
+        <label>Club * <select data-new-member="club_id"><option value="">Select a club</option><?php foreach (getDB()->query('SELECT club_id, club_name FROM tin_clubs ORDER BY club_name, club_id') as $clubOption): ?><option value="<?= agendaEscape($clubOption['club_id']) ?>"><?= agendaEscape($clubOption['club_name']) ?></option><?php endforeach; ?></select></label>
+        <label>Gender <select data-new-member="gender"><option value="">Select</option><option value="M">Male</option><option value="F">Female</option></select></label>
+        <label>Introduction (optional) <textarea data-new-member="intro" maxlength="1500" rows="4"></textarea></label>
+        <p data-member-error role="status"></p>
+        <button type="button" data-create-member class="btn btn-primary">Add member</button>
+        <button type="button" data-cancel-member class="btn btn-outline-secondary">Cancel</button>
+    </dialog>
+    <datalist id="role-member-options">
+        <?php foreach ($roleMembers ?? [] as $member): ?><option value="<?= agendaEscape($member['label']) ?>" data-club-ids="<?= agendaEscape(json_encode($member['club_ids'])) ?>" data-member-id="<?= agendaEscape($member['member_id']) ?>" data-name="<?= agendaEscape($member['full_name']) ?>"></option><?php endforeach; ?>
+    </datalist>
     <?php $roleKeys = array_unique(array_filter(array_column(agendaDefinitions(), 2))); ?>
-    <?php foreach ($roleKeys as $role): ?><input type="hidden" data-role-value="<?= $role ?>" name="roles[<?= $role ?>]" value="<?= agendaEscape($meeting['roles'][$role] ?? '') ?>"><?php endforeach; ?>
+    <?php foreach ($roleKeys as $role): ?><input type="hidden" data-role-value="<?= $role ?>" name="roles[<?= $role ?>]" value="<?= agendaEscape($meeting['role_member_ids'][$role] ?? '') ?>"><?php endforeach; ?>
 <?php endif; ?>

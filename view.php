@@ -12,6 +12,7 @@ require __DIR__ . '/includes/header.php';
     <div><h1>Agenda Preview</h1><p>Your meeting schedule and ballot sheet, ready to share.</p></div>
     <div class="builder-actions">
         <a href="form.php?id=<?= (int)$meeting['id'] ?>" class="btn btn-outline-primary">&lt;&lt; Go Back & Edit</a>
+        <a href="role_takers.php?id=<?= (int)$meeting['id'] ?>" class="btn btn-outline-primary">Role Taker Introductions</a>
         <a href="generate_pdf.php?id=<?= (int)$meeting['id'] ?>" class="btn btn-primary">Download PDF</a>
         <a href="form.php" class="btn btn-danger">Create New Agenda</a>
     </div>

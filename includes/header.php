@@ -50,7 +50,7 @@ $selectedOrder = ($meeting['agenda_order'] ?? 'TT') === 'FS' ? 'FS' : 'TT';
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="navbar-brand">by keeping
+        <div class="navbar-brand">keep
             <select name="agenda_order" id="orderby" form="agenda-form" aria-label="First agenda segment" <?= !empty($editable) ? '' : 'disabled' ?>>
                 <option value="TT" <?= $selectedOrder === 'TT' ? 'selected' : '' ?>>Table Topic</option>
                 <option value="FS" <?= $selectedOrder === 'FS' ? 'selected' : '' ?>>Featured Speaker</option>

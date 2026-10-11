@@ -141,6 +141,27 @@ function selectedBallots(array $meeting): array
     return $defaults;
 }
 
+function participantConflictErrors(array $meeting): array
+{
+    $seen = [];
+    $errors = [];
+    foreach (['prepared_speakers' => ['speaker_name', 'Prepared speaker'], 'tt_speakers' => ['speaker_name', 'TT speaker'], 'evaluators' => ['evaluator_name', 'Evaluator']] as $kind => [$field, $label]) {
+        if (!agendaSectionEnabled($meeting, $kind)) continue;
+        foreach (array_values($meeting[$kind] ?? []) as $index => $row) {
+            $name = trim(preg_replace('/\s+/u', ' ', $row[$field] ?? ''));
+            $key = mb_strtolower($name, 'UTF-8');
+            if ($key === '' || ($kind === 'tt_speakers' && $key === 'given during the meeting')) continue;
+            $position = $label . ' ' . ($index + 1);
+            if (isset($seen[$key])) {
+                [$previous, $previousKind] = $seen[$key];
+                $crossRole = ($kind === 'evaluators') !== ($previousKind === 'evaluators');
+                $errors[] = $name . ' is assigned to both ' . $previous . ' and ' . $position . '. ' . ($crossRole ? 'A person cannot be both speaker and evaluator.' : 'Choose a different person for each slot.');
+            } else $seen[$key] = [$position, $kind];
+        }
+    }
+    return $errors;
+}
+
 function clockTime(int $minutes): string
 {
     $minutes = (($minutes % 1440) + 1440) % 1440;

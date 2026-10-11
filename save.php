@@ -43,6 +43,15 @@ $date = DateTime::createFromFormat('!Y-m-d', $meeting['meeting_date']);
 if (!$date || $date->format('Y-m-d') !== $meeting['meeting_date']) { $errors[] = 'Enter a valid meeting date.'; }
 
 $meeting['roles'] = [];
+$roleMembers = getRoleMembers();
+foreach (array_unique(array_filter(array_column(agendaDefinitions(), 2))) as $role) {
+    $memberId = trim($_POST['roles'][$role] ?? '');
+    if ($memberId !== '' && !isset($roleMembers[$memberId])) $errors[] = 'Select a valid member for ' . str_replace('_', ' ', $role) . '.';
+    if ($memberId === '' && trim($_POST['role_labels'][$role] ?? '') !== '') $errors[] = 'Choose a member from the suggestions for ' . str_replace('_', ' ', $role) . '.';
+}
+foreach (agendaDefinitions() as $definition) {
+    if ($definition[2] && agendaSectionEnabled($meeting, $definition[0]) && trim($_POST['roles'][$definition[2]] ?? '') === '') $errors[] = 'Select a role taker for ' . str_replace('_', ' ', $definition[2]) . '.';
+}
 $meeting['agenda_durations'] = [];
 foreach (agendaDefinitions() as $definition) {
     [$key, $title, $role, $default] = $definition;
@@ -65,6 +74,7 @@ foreach ($_POST['clubs'] ?? [] as $row) {
     if (mb_strlen($club['name']) > 255 || mb_strlen($club['meeting_number']) > 50) $errors[] = 'Club names must be at most 255 characters and meeting numbers at most 50.';
     foreach (clubOfficerRoles() as $role => $label) {
         $club['officers'][$role] = trim($row['officers'][$role] ?? '');
+        if ($club['officers'][$role] === '') $errors[] = $label . ' name is required for ' . $club['name'] . '.';
         if (mb_strlen($club['officers'][$role]) > 255) $errors[] = $label . ' name must be at most 255 characters.';
     }
     $meeting['clubs'][] = $club;
@@ -104,6 +114,7 @@ foreach ($_POST['evaluators'] ?? [] as $row) {
     } catch (InvalidArgumentException $e) { if (agendaSectionEnabled($meeting, 'evaluators')) $errors[] = 'Evaluator: ' . $e->getMessage(); else $duration = '3'; }
     $meeting['evaluators'][] = ['evaluator_name' => $name, 'speaker_name' => $speaker, 'duration' => $duration];
 }
+$errors = array_merge($errors, participantConflictErrors($meeting));
 if ($errors) {
     $_SESSION['errors'] = array_values(array_unique($errors));
     $_SESSION['form_data'] = $_POST;
@@ -132,7 +143,7 @@ try {
     }
     $stmt = $pdo->prepare('INSERT INTO tiab_meeting_clubs (meeting_id, club_id, club_name, club_area, meeting_number, officers_json, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)');
     foreach ($meeting['clubs'] as $i => $club) { $stmt->execute([$id, $club['club_id'], $club['name'], $club['area'], $club['meeting_number'], json_encode($club['officers'], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR), $i]); }
-    $stmt = $pdo->prepare('INSERT INTO tiab_functional_roles (meeting_id, role_key, person_name) VALUES (?, ?, ?)');
+    $stmt = $pdo->prepare('INSERT INTO tiab_functional_roles (meeting_id, role_key, member_id) VALUES (?, ?, ?)');
     foreach ($meeting['roles'] as $key => $person) { if ($person !== '') $stmt->execute([$id, $key, $person]); }
     $stmt = $pdo->prepare('INSERT INTO tiab_agenda_durations (meeting_id, item_key, duration) VALUES (?, ?, ?)');
     foreach ($meeting['agenda_durations'] as $key => $duration) { $stmt->execute([$id, $key, $duration]); }

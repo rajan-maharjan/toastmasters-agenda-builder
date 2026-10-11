@@ -16,7 +16,7 @@ function sheetClub($index, array $club): void
 function sheetClubOfficer($index, array $club, string $role, string $label, bool $editable): void
 {
     echo '<div class="club-officer-name" data-officer-club="' . agendaEscape($club['club_id'] ?? '') . '" data-club-key="' . agendaEscape($index) . '"><span class="officer-club-label" title="' . agendaEscape($club['name'] ?? '') . '">' . agendaEscape(shortClubName($club['name'] ?? '') ?: 'Club') . '</span>';
-    sheetInput('clubs[' . $index . '][officers][' . $role . ']', $club['officers'][$role] ?? '', $label . ' name', $editable, 'placeholder="Name" maxlength="255"');
+    sheetInput('clubs[' . $index . '][officers][' . $role . ']', $club['officers'][$role] ?? '', $label . ' name', $editable, 'required placeholder="Name" maxlength="255"');
     echo '</div>';
 }
 
@@ -59,7 +59,7 @@ function sheetParticipant(string $kind, $index, array $row, array $speakers, boo
     }
     if ($kind === 'evaluators') {
         echo '<td>';
-        sheetInput($prefix . '[evaluator_name]', $row['evaluator_name'] ?? '', 'Evaluator', $editable, 'data-person required placeholder="Evaluator name" maxlength="255"');
+        sheetInput($prefix . '[evaluator_name]', $row['evaluator_name'] ?? '', 'Evaluator', $editable, 'data-person data-member-autocomplete role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="role-member-results" autocomplete="off" required placeholder="Evaluator name" maxlength="255"');
         echo '</td><td>';
         if ($editable) {
             $selected = isset($row['speaker_index']) ? (string)$row['speaker_index'] : '';
@@ -82,7 +82,7 @@ function sheetParticipant(string $kind, $index, array $row, array $speakers, boo
     } else {
         echo '<td>';
         sheetInput($prefix . '[speaker_name]', $row['speaker_name'] ?? '', 'Speaker name', $editable,
-            'data-person placeholder="' . ($kind === 'tt_speakers' ? 'Given during the meeting' : 'Speaker name') . '" maxlength="255"' . ($kind === 'prepared_speakers' ? ' required' : ''));
+            'data-person data-member-autocomplete role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="role-member-results" autocomplete="off" placeholder="' . ($kind === 'tt_speakers' ? 'Given during the meeting' : 'Speaker name') . '" maxlength="255"' . ($kind === 'prepared_speakers' ? ' required' : ''));
         echo '</td>';
         if ($kind === 'prepared_speakers') {
             foreach (['topic' => 'Topic', 'level' => 'Level', 'pathways' => 'Pathways'] as $field => $label) {

@@ -1,0 +1,20 @@
+.role-takers-sheet { background:white; padding:16px; color:#111; }
+.role-takers-sheet h2 { text-align:center; font-size:18px; margin:0 0 8px; }
+.role-takers-sheet > p { text-align:center; }
+.role-takers-table { width:100%; border-collapse:collapse; table-layout:fixed; font-family:Arial,sans-serif; font-size:14px; }
+.role-takers-table th, .role-takers-table td { border:1px solid #b6c5d8; padding:6px; text-align:left; vertical-align:top; overflow-wrap:anywhere; }
+.role-takers-table thead { background:#cdddf3; }
+.role-takers-table tbody tr { background:#e6effd; }
+.role-takers-table tbody tr:nth-child(even) { background:#dce7f6; }
+@media print {
+ @page { size:A4 landscape; margin:8mm; }
+ nav, .no-print, body > footer { display:none !important; }
+ body { background:white !important; }
+ body > .container { max-width:none !important; width:100%; margin:0; padding:0 !important; }
+ .role-takers-sheet { padding:0; }
+ .role-takers-table { font-size:9pt; line-height:1.25; }
+ .role-takers-table th, .role-takers-table td { padding:4px; }
+ .role-takers-table thead { display:table-header-group; }
+ .role-takers-table tr { break-inside:avoid; }
+ .role-takers-sheet * { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+}

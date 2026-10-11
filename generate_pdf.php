@@ -22,7 +22,7 @@ class AgendaPDF extends TCPDF
         $this->SetXY(8, -8);
         $this->SetFont('dejavusans', 'U', 7);
         $this->SetTextColor(0, 0, 0);
-        $this->Cell(155, 4, 'Generated from: https://rajanmaharjan.com.np', 0, 0, 'L', false, 'https://rajanmaharjan.com.np');
+        $this->Cell(155, 4, 'Generated from: https://rajanmaharjan.com.np/agenda-builder', 0, 0, 'L', false, 'https://rajanmaharjan.com.np/agenda-builder');
         $this->SetFont('dejavusans', '', 6);
         $this->Cell(39, 4, $this->getAliasNumPage() . ' / ' . $this->getAliasNbPages(), 0, 0, 'R');
     }
@@ -79,7 +79,7 @@ class AgendaPDF extends TCPDF
     }
 }
 $pdf = new AgendaPDF('P', 'mm', 'A4', true, 'UTF-8', false);
-$pdf->SetCreator('https://rajanmaharjan.com.np');
+$pdf->SetCreator('https://rajanmaharjan.com.np/agenda-builder');
 $pdf->SetAuthor('Rajan Maharjan');
 $pdf->SetTitle('Meeting Agenda - ' . $meeting['theme']);
 $pdf->SetMargins(8, 8, 8);

@@ -6,6 +6,12 @@
 .role-takers-table thead { background:#cdddf3; }
 .role-takers-table tbody tr { background:#e6effd; }
 .role-takers-table tbody tr:nth-child(even) { background:#dce7f6; }
+.introduction-edit-tip { font-size:13px; margin:0 0 12px; }
+.introduction-cell { white-space:pre-wrap; cursor:text; }
+.introduction-cell:focus-within { outline:2px solid #004165; outline-offset:-2px; }
+.intro-empty-label { color:#555; font-style:italic; }
+.introduction-input { display:block; width:100%; min-height:4.5em; padding:6px; border:1px solid #8799b1; border-radius:4px; font:inherit; }
+.introduction-input[hidden] { display:none !important; }
 @media print {
  @page { size:A4 landscape; margin:8mm; }
  nav, .no-print, body > footer { display:none !important; }
@@ -16,5 +22,6 @@
  .role-takers-table th, .role-takers-table td { padding:4px; }
  .role-takers-table thead { display:table-header-group; }
  .role-takers-table tr { break-inside:avoid; }
+ .introduction-edit-tip, .intro-empty-label { display:none !important; }
  .role-takers-sheet * { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
 }

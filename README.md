@@ -88,6 +88,10 @@ ranges with a maximum of 1â€“240; ordinary agenda items accept whole numbers 0â€
 The extra minute is calculated separately, so saving/reopening never adds it twice.
 The end time shows a day offset when the meeting crosses midnight.
 
+The Role Taker Introductions page uses member biographies from `tin_members.intro`.
+Double-click any blank or filled introduction to edit it for the current page and
+print. These edits are temporary and do not update `tin_members.intro`.
+
 Table Topic speakers use a fixed `1-2 min` range and a 3-minute scheduled slot.
 Evaluators select a speaker from Featured Speakers, with a default speaking time
 of `2-3 min` and a 4-minute slot; entering just `3` reserves 3 minutes. The PDF displays

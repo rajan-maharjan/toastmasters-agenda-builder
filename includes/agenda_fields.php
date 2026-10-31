@@ -16,7 +16,7 @@ function sheetClub($index, array $club): void
 function sheetClubOfficer($index, array $club, string $role, string $label, bool $editable): void
 {
     echo '<div class="club-officer-name" data-officer-club="' . agendaEscape($club['club_id'] ?? '') . '" data-club-key="' . agendaEscape($index) . '"><span class="officer-club-label" title="' . agendaEscape($club['name'] ?? '') . '">' . agendaEscape(shortClubName($club['name'] ?? '') ?: 'Club') . '</span>';
-    sheetInput('clubs[' . $index . '][officers][' . $role . ']', $club['officers'][$role] ?? '', $label . ' name', $editable, 'required placeholder="Name" maxlength="255"');
+    sheetInput('clubs[' . $index . '][officers][' . $role . ']', $club['officers'][$role] ?? '', $label . ' name', $editable, 'data-member-autocomplete role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="role-member-results" autocomplete="off" required placeholder="Search club member" maxlength="255"');
     echo '</div>';
 }
 

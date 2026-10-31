@@ -2,6 +2,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const orderDropdown = document.getElementById('orderby');
 
     document.querySelectorAll('[data-print-page]').forEach(button => button.addEventListener('click', () => window.print()));
+    document.querySelectorAll('[data-introduction-cell]').forEach(cell => {
+        const display = cell.querySelector('[data-introduction-display]');
+        const input = cell.querySelector('[data-introduction-input]');
+        if (!display || !input) return;
+
+        const finishEditing = () => {
+            display.textContent = input.value.trim() ? input.value : 'No introduction - double-click to add one.';
+            display.classList.toggle('intro-empty-label', !input.value.trim());
+            display.hidden = false;
+            input.hidden = true;
+        };
+        const startEditing = () => {
+            if (!input.hidden) return;
+            input.value = display.classList.contains('intro-empty-label') ? '' : display.textContent;
+            display.hidden = true;
+            input.hidden = false;
+            input.focus();
+        };
+
+        cell.addEventListener('dblclick', startEditing);
+        input.addEventListener('blur', finishEditing);
+        window.addEventListener('beforeprint', () => {
+            if (!input.hidden) finishEditing();
+        });
+    });
     document.querySelectorAll('form[data-confirm]').forEach(form => {
         form.addEventListener('submit', event => {
             if (!window.confirm(form.dataset.confirm)) event.preventDefault();
@@ -35,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const visible = message && (validateAll || input.dataset.validationTouched || input.validity.customError);
             let error = input._validationError;
             if (visible && !error) {
+                /*
                 error = document.createElement('span');
                 error.id = `agenda-field-error-${++errorCounter}`;
                 error.className = 'agenda-field-error';
@@ -44,6 +70,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 wrapper.append(input, error);
                 input._validationError = error;
                 input.setAttribute('aria-describedby', [input.getAttribute('aria-describedby'), error.id].filter(Boolean).join(' '));
+                */
+                error = document.createElement('span');
+                error.id = `agenda-field-error-${++errorCounter}`;
+                error.className = 'agenda-field-error';
+
+                // Reuse an existing validation span if one is already there
+                let wrapper = input.closest('.agenda-validation-control');          // input already inside one
+                if (!wrapper) {
+                    const prev = input.previousElementSibling;                      // empty span placed right before the input
+                    if (prev && prev.classList.contains('agenda-validation-control')) {
+                        wrapper = prev;
+                    }
+                }
+
+                if (wrapper) {
+                    // Existing span found: put the error inside it (and the input too, if it isn't already there)
+                    if (!wrapper.contains(input)) wrapper.append(input);
+                    wrapper.append(error);
+                } else {
+                    // No span found: create a new one
+                    wrapper = document.createElement('span');
+                    wrapper.className = 'agenda-validation-control';
+                    input.before(wrapper);
+                    wrapper.append(input, error);
+                }
+
+                input._validationError = error;
+                input.setAttribute(
+                    'aria-describedby',
+                    [input.getAttribute('aria-describedby'), error.id].filter(Boolean).join(' ')
+                );
             }
             input.classList.toggle('agenda-invalid', !!visible);
             input.setAttribute('aria-invalid', visible ? 'true' : 'false');
@@ -108,11 +165,17 @@ document.addEventListener('DOMContentLoaded', () => {
         results.hidden = true;
         activeRoleInput = null;
     }
+    function memberBelongsToField(option, input) {
+        const officer = input.closest('.club-officer-name');
+        if (!officer) return true;
+        const clubId = officer.dataset.officerClub;
+        return !!clubId && JSON.parse(option.dataset.clubIds || '[]').some(id => String(id) === clubId);
+    }
     function renderMembers(input) {
         activeRoleInput = input;
         highlighted = -1;
         const query = selectedMember(input) ? '' : input.value.trim().toLocaleLowerCase();
-        const matches = memberNodes.filter(option => option.value.toLocaleLowerCase().includes(query)).slice(0, 60);
+        const matches = memberNodes.filter(option => memberBelongsToField(option, input) && option.value.toLocaleLowerCase().includes(query)).slice(0, 60);
         results.replaceChildren();
         function addResult(label, action) {
             const item = document.createElement('button');
@@ -133,7 +196,10 @@ document.addEventListener('DOMContentLoaded', () => {
             input.focus();
             closeMembers();
         }));
-        addResult('+ Add new member', () => { closeMembers(); openMemberDialog(input); });
+        const officerField = input.closest('.club-officer-name');
+        if (!officerField || officerField.dataset.officerClub) {
+            addResult('+ Add new member', () => { closeMembers(); openMemberDialog(input); });
+        } else addResult('Select a club first', closeMembers);
         const rect = input.getBoundingClientRect();
         results.style.left = Math.max(8, Math.min(rect.left, window.innerWidth - 368)) + 'px';
         results.style.top = Math.min(rect.bottom, window.innerHeight - 180) + 'px';
@@ -173,7 +239,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function openMemberDialog(input) {
         newMemberInput = input;
         const clubSelect = memberDialog.querySelector('[data-new-member="club_id"]');
-        clubSelect.value = all('[data-club-select]').find(select => select.value)?.value || '';
+        const officer = input.closest('.club-officer-name');
+        clubSelect.value = officer ? officer.dataset.officerClub : (all('[data-club-select]').find(select => select.value)?.value || '');
+        clubSelect.disabled = !!officer;
         memberDialog.querySelector('[data-new-member="full_name"]').value = selectedMember(input) ? '' : input.value;
         memberDialog.querySelector('[data-member-error]').textContent = '';
         memberDialog.showModal();
@@ -433,6 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 if (field.dataset.officerClub !== club.clubId) {
                     field.querySelector('input').value = club.officers[section.dataset.officerRole] || '';
+                    delete field.querySelector('input').dataset.memberId;
                     field.dataset.officerClub = club.clubId;
                 }
                 field.querySelector('.officer-club-label').textContent = club.name || 'Club';
@@ -440,6 +509,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 field.querySelector('input').setAttribute('aria-label', `${section.querySelector('strong').textContent} — ${club.name || 'Club'} name`);
             });
         });
+        bindMemberInputs();
     }
     function refresh() {
         bindMemberInputs();

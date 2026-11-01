@@ -14,9 +14,14 @@ function getDB(): PDO
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
-            PDO::MYSQL_ATTR_MULTI_STATEMENTS => false,
-            PDO::MYSQL_ATTR_LOCAL_INFILE => false,
         ];
+        if (PHP_VERSION_ID >= 80500) {
+            $options[\Pdo\Mysql::ATTR_MULTI_STATEMENTS] = false;
+            $options[\Pdo\Mysql::ATTR_LOCAL_INFILE] = false;
+        } else {
+            $options[PDO::MYSQL_ATTR_MULTI_STATEMENTS] = false;
+            $options[PDO::MYSQL_ATTR_LOCAL_INFILE] = false;
+        }
 
         try {
             if (DB_USER === '') {

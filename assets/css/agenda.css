@@ -79,6 +79,8 @@
 .participant-table th { background:#e9edf1; color:#243746; font-size:10px; font-weight:700; padding:5px 6px; text-align:left; }
 .participant-table td { border:1px solid #c7ced7; padding:5px 6px; overflow-wrap:anywhere; }
 .participant-table .sheet-input { padding:3px 2px; }
+.pathway-select option.pathway-current { background:#d1e7dd; color:#0f5132; }
+.pathway-select option.pathway-discontinued { background:#f8d7da; color:#842029; }
 .participant-table.prepared_speakers th:nth-child(1) { width:24%; }
 .participant-table.prepared_speakers th:nth-child(2) { width:28%; }
 .participant-table.prepared_speakers th:nth-child(3) { width:10%; }

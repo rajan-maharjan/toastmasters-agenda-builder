@@ -7,7 +7,7 @@
 .role-takers-table tbody tr { background:#e6effd; }
 .role-takers-table tbody tr:nth-child(even) { background:#dce7f6; }
 .introduction-edit-tip { font-size:13px; margin:0 0 12px; }
-.introduction-cell { white-space:pre-wrap; cursor:text; }
+.introduction-cell { cursor:text; }
 .introduction-cell:focus-within { outline:2px solid #004165; outline-offset:-2px; }
 .intro-empty-label { color:#555; font-style:italic; }
 .introduction-input { display:block; width:100%; min-height:4.5em; padding:6px; border:1px solid #8799b1; border-radius:4px; font:inherit; }

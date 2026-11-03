@@ -48,6 +48,40 @@ function sheetDuration(string $name, $value, string $label, bool $editable, int 
     echo '<span class="duration-unit">min</span></span>';
 }
 
+function sheetPathway(string $name, $value, bool $editable): void
+{
+    $currentPathways = [
+        'Dynamic Leadership',
+        'Engaging Humor',
+        'Motivational Strategies',
+        'Persuasive Influence',
+        'Presentation Mastery',
+        'Visionary Communication',
+    ];
+    $discontinuedPathways = [
+        'Effective Coaching',
+        'Innovative Planning',
+        'Leadership Development',
+        'Strategic Relationships',
+        'Team Collaboration',
+    ];
+
+    if (!$editable) {
+        echo '<span class="sheet-value">' . agendaEscape($value ?: '—') . '</span>';
+        return;
+    }
+
+    echo '<select class="sheet-input pathway-select" name="' . agendaEscape($name) . '" aria-label="Pathways; options in light red are discontinued by Toastmasters International">';
+    echo '<option value="">Select a pathway</option>';
+    foreach ($currentPathways as $pathway) {
+        echo '<option class="pathway-current" value="' . agendaEscape($pathway) . '"' . ($value === $pathway ? ' selected' : '') . '>' . agendaEscape($pathway) . '</option>';
+    }
+    foreach ($discontinuedPathways as $pathway) {
+        echo '<option class="pathway-discontinued" value="' . agendaEscape($pathway) . '"' . ($value === $pathway ? ' selected' : '') . '>' . agendaEscape($pathway) . '</option>';
+    }
+    echo '</select>';
+}
+
 function sheetParticipant(string $kind, $index, array $row, array $speakers, bool $editable, int $position = 1): void
 {
     $arrayName = $kind === 'prepared_speakers' ? 'speakers' : $kind;
@@ -85,11 +119,14 @@ function sheetParticipant(string $kind, $index, array $row, array $speakers, boo
             'data-person data-member-autocomplete role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="role-member-results" autocomplete="off" placeholder="' . ($kind === 'tt_speakers' ? 'Given during the meeting' : 'Speaker name') . '" maxlength="255"' . ($kind === 'prepared_speakers' ? ' required' : ''));
         echo '</td>';
         if ($kind === 'prepared_speakers') {
-            foreach (['topic' => 'Topic', 'level' => 'Level', 'pathways' => 'Pathways'] as $field => $label) {
+            foreach (['topic' => 'Topic', 'level' => 'Level'] as $field => $label) {
                 echo '<td>';
                 sheetInput($prefix . '[' . $field . ']', $row[$field] ?? '', $label, $editable, 'placeholder="' . $label . '"');
                 echo '</td>';
             }
+            echo '<td>';
+            sheetPathway($prefix . '[pathways]', $row['pathways'] ?? '', $editable);
+            echo '</td>';
         }
     }
     echo '<td><div class="duration-cell">';

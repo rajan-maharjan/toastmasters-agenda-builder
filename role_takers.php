@@ -30,7 +30,7 @@ foreach (buildAgenda($meeting)['blocks'] as $block) {
         foreach (array_values($block['rows']) as $i => $row) {
             $name = trim($row[$field] ?? '');
             if ($name === '' || strcasecmp($name, 'Given during the meeting') === 0) {
-                if ($block['key'] === 'tt_speakers') $introductions[] = ['role' => $label . ' ' . ($i + 1), 'name' => 'Given during the meeting', 'intro' => 'Speaker and introduction to be confirmed.'];
+                /*if ($block['key'] === 'tt_speakers') $introductions[] = ['role' => $label . ' ' . ($i + 1), 'name' => 'Given during the meeting', 'intro' => 'Speaker and introduction to be confirmed.'];*/
                 continue;
             }
             $memberLookup->execute([$name]);

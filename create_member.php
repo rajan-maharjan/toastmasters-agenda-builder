@@ -24,7 +24,7 @@ try {
         $stmt=$pdo->prepare('SELECT id FROM tin_members WHERE member_id=? OR TRIM(full_name)=? LIMIT 1');
         $stmt->execute([$values['member_id'],$values['full_name']]);
         if ($stmt->fetchColumn()) throw new InvalidArgumentException('A member with this ID or name already exists. Select their club to find them in the suggestions.');
-        $stmt=$pdo->prepare("INSERT INTO tin_members (member_id,full_name,first_name,middle_name,last_name,email,current_do_position,mobile_number,gender,skill_ids,intro,profile_link,profile_picture,updated_by,updated_on) VALUES (?,?,'','','','','','',?,'',?,'','',0,CURDATE())");
+        $stmt=$pdo->prepare("INSERT INTO tin_members (member_id,full_name,gender,intro,updated_by,updated_on) VALUES (?,?,?,?,0,CURDATE())");
         $stmt->execute([$values['member_id'],$values['full_name'],$values['gender'],$values['intro']]);
         $stmt=$pdo->prepare("INSERT INTO tin_members_club_role (member_id,club_id,role_code,fy_id) VALUES (?,?,'MEM',5)");
         $stmt->execute([$values['member_id'],$values['club_id']]);

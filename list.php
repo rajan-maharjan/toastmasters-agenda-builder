@@ -56,7 +56,7 @@ require 'includes/header.php';
                             <td><?= $schedule['start'] ?> - <?= $schedule['end'] ?><?= $schedule['day_offset'] ? ' (+' . $schedule['day_offset'] . ' day)' : '' ?> <?= htmlspecialchars($meeting['timezone'] ?? '') ?></td>
                             <td>
                                 <a href="view.php?id=<?= (int)$meeting['id'] ?>" class="btn btn-sm btn-info text-white" title="View">View</a>
-                                <a href="generate_pdf.php?id=<?= (int)$meeting['id'] ?>" class="btn btn-sm btn-success">Download PDF</a>
+                                <a href="generate_pdf.php?id=<?= (int)$meeting['id'] ?>" class="btn btn-sm btn-success">Download Agenda PDF</a>
                                 <a href="form.php?id=<?= (int)$meeting['id'] ?>" class="btn btn-sm btn-warning" title="Edit">Edit</a>
                                 <form action="delete.php" method="POST" class="d-inline" data-confirm="Are you sure you want to delete this agenda? This action cannot be undone.">
                                     <?= csrfField() ?>

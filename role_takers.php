@@ -5,11 +5,13 @@ require_once __DIR__ . '/includes/agenda.php';
 $meeting = getMeetingFull(requestId($_GET, 'id'));
 if (!$meeting) { http_response_code(404); exit('Meeting not found.'); }
 $labels = ['saa' => 'SAA', 'presiding_officer' => 'Presiding Officer', 'tmoe' => tmoeLabel($meeting['start_time']), 'ge' => 'GE', 'timer' => 'Timer', 'ah_counter' => 'Ah Counter', 'grammarian' => 'Grammarian', 'ballot_counter' => 'Ballot Counter', 'tt_master' => 'Table Topics Master'];
+$labels['presiding_officer'] = 'Opening Presiding Officer';
+$labels['closing_presiding_officer'] = 'Closing Presiding Officer';
 $roles = [];
 $introductions = [];
 $pdo = getDB();
-$memberLookup = $pdo->prepare('SELECT member_id, full_name, intro FROM tin_members WHERE TRIM(full_name) = ?');
-$memberIdLookup = $pdo->prepare('SELECT member_id, intro FROM tin_members WHERE member_id = ?');
+$memberLookup = $pdo->prepare('SELECT id AS member_id, full_name, intro FROM tin_members WHERE TRIM(full_name) = ?');
+$memberIdLookup = $pdo->prepare('SELECT id AS member_id, intro FROM tin_members WHERE id = ?');
 foreach (buildAgenda($meeting)['blocks'] as $block) {
     if ($block['role'] && !isset($roles[$block['role']])) {
         $roles[$block['role']] = true;

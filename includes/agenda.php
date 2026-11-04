@@ -93,7 +93,7 @@ function agendaDefinitions(string $orderby = 'TT'): array
             ['timer_report', 'GE calls for the Timer report', 'timer', '1-2 min'],
             ['conclusion', 'GE returns control to the TMoE; TMoE concludes the theme', 'tmoe', '1 min'],
             ['awards', 'Presentation of awards by the Ballot Counter', 'ballot_counter', '3 mins'],
-            ['adjourn', 'Presiding Officer adjourns the meeting', 'presiding_officer', '2 mins'],
+            ['adjourn', 'Presiding Officer adjourns the meeting', 'closing_presiding_officer', '2 mins'],
             ['networking', 'Networking and group photograph', '', '0 mins'],
         ]
     );
@@ -227,7 +227,7 @@ function buildAgenda(array $meeting, bool $includeExcluded = false): array
         }
         if (!$enabled) $total = 0;
         $blocks[] = ['enabled' => $enabled, 'template' => $template, 'key' => $key, 'title' => $title, 'role' => $role, 'kind' => $isGroup ? 'group' : 'item',
-            'person' => $meeting['roles'][$role] ?? '', 'duration' => $duration, 'minutes' => $total,
+            'person' => $meeting['roles'][$role] ?? ($role === 'closing_presiding_officer' ? ($meeting['roles']['presiding_officer'] ?? '') : ''), 'duration' => $duration, 'minutes' => $total,
             'time' => clockTime($cursor), 'rows' => $rows];
         $cursor += $total;
     }

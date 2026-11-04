@@ -175,7 +175,11 @@ document.addEventListener('DOMContentLoaded', () => {
         activeRoleInput = input;
         highlighted = -1;
         const query = selectedMember(input) ? '' : input.value.trim().toLocaleLowerCase();
-        const matches = memberNodes.filter(option => memberBelongsToField(option, input) && option.value.toLocaleLowerCase().includes(query)).slice(0, 60);
+        const mobileQuery = /^[+\d\s().-]+$/.test(query) ? query.replace(/\D/g, '') : '';
+        const matches = memberNodes.filter(option => memberBelongsToField(option, input) && (
+            option.value.toLocaleLowerCase().includes(query) ||
+            (mobileQuery !== '' && (option.dataset.mobileNumber || '').replace(/\D/g, '').includes(mobileQuery))
+        )).slice(0, 60);
         results.replaceChildren();
         function addResult(label, action) {
             const item = document.createElement('button');
@@ -187,15 +191,20 @@ document.addEventListener('DOMContentLoaded', () => {
             item.addEventListener('click', action);
             results.append(item);
         }
-        matches.forEach(option => addResult(option.value, () => {
-            input.value = option.dataset.name;
-            input.dataset.memberId = option.dataset.memberId;
-            syncRole(input);
-            refreshBallots();
-            closeMembers();
-            input.focus();
-            closeMembers();
-        }));
+        matches.forEach(option => {
+            const digits = (option.dataset.mobileNumber || '').replace(/\D/g, '');
+            const matchIndex = mobileQuery ? digits.indexOf(mobileQuery) : -1;
+            const maskedNumber = matchIndex < 0 ? '' : '*'.repeat(matchIndex) + mobileQuery + '*'.repeat(digits.length - matchIndex - mobileQuery.length);
+            addResult(option.value + (maskedNumber ? ' · ' + maskedNumber : ''), () => {
+                input.value = option.dataset.name;
+                input.dataset.memberId = option.dataset.memberId;
+                syncRole(input, true);
+                refreshBallots();
+                closeMembers();
+                input.focus();
+                closeMembers();
+            });
+        });
         const officerField = input.closest('.club-officer-name');
         if (!officerField || officerField.dataset.officerClub) {
             addResult('+ Add new member', () => { closeMembers(); openMemberDialog(input); });
@@ -238,10 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const memberDialog = document.getElementById('new-member-dialog');
     function openMemberDialog(input) {
         newMemberInput = input;
-        const clubSelect = memberDialog.querySelector('[data-new-member="club_id"]');
-        const officer = input.closest('.club-officer-name');
-        clubSelect.value = officer ? officer.dataset.officerClub : (all('[data-club-select]').find(select => select.value)?.value || '');
-        clubSelect.disabled = !!officer;
         memberDialog.querySelector('[data-new-member="full_name"]').value = selectedMember(input) ? '' : input.value;
         memberDialog.querySelector('[data-member-error]').textContent = '';
         memberDialog.showModal();
@@ -262,12 +267,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const body = new URLSearchParams({csrf_token: form.querySelector('[name="csrf_token"]').value});
             all('[data-new-member]', memberDialog).forEach(input => body.set(input.dataset.newMember, input.value));
             const response = await fetch('create_member.php', {method:'POST', body});
+            const contentType = response.headers.get('content-type') || '';
+            if (!contentType.includes('application/json')) {
+                const message = contentType.includes('text/plain') ? await response.text() : '';
+                throw new Error(message || 'Could not add member. Reload the page and try again.');
+            }
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || 'Could not add member.');
             const member = data.member;
             const option = new Option('', member.label);
             option.dataset.memberId = member.member_id;
             option.dataset.name = member.full_name;
+            option.dataset.mobileNumber = member.mobile_number || '';
             option.dataset.clubIds = JSON.stringify(member.club_ids);
             memberNodes.push(option);
             memberOptions.set(member.label, {id:member.member_id, name:member.full_name});
@@ -276,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const input = newMemberInput;
             input.value = member.full_name;
             input.dataset.memberId = String(member.member_id);
-            syncRole(input);
+            syncRole(input, true);
             refreshBallots();
             memberDialog.close();
             all('[data-new-member]', memberDialog).forEach(input => {input.value='';});
@@ -284,18 +295,29 @@ document.addEventListener('DOMContentLoaded', () => {
             memberDialog.querySelector('[data-member-error]').textContent = error.message;
         } finally { create.disabled = false; }
     });
-    function syncRole(input) {
+    const openingPO = form.querySelector('[data-role="presiding_officer"]');
+    const closingPO = form.querySelector('[data-role="closing_presiding_officer"]');
+    let closingPOCustomized = !!closingPO && !!closingPO.value && (
+        closingPO.dataset.memberId !== openingPO?.dataset.memberId || closingPO.value !== openingPO?.value
+    );
+    function syncRole(input, userChange = false) {
         if (!input.dataset.role) {
             input.dispatchEvent(new Event('input', {bubbles:true}));
             return;
         }
         const member = selectedMember(input);
+        if (input === closingPO && userChange === true) closingPOCustomized = true;
         all(`[data-role="${input.dataset.role}"]`).forEach(other => {
             if (other !== input) other.value = input.value;
             other.dataset.memberId = member ? member.id : '';
             other.setCustomValidity(input.value.trim() && !member ? 'Choose a member from the autocomplete suggestions.' : '');
         });
         form.querySelector(`[data-role-value="${input.dataset.role}"]`).value = member ? member.id : '';
+        if (input === openingPO && closingPO && !closingPOCustomized) {
+            closingPO.value = input.value;
+            closingPO.dataset.memberId = member ? member.id : '';
+            syncRole(closingPO);
+        }
     }
 
     function reorderSections() {
@@ -541,7 +563,7 @@ document.addEventListener('DOMContentLoaded', () => {
         serverMessages = [];
         if (input.matches('[data-club-select], [data-club-number]')) refreshClubs();
         if (input.dataset.role) {
-            syncRole(input);
+            syncRole(input, true);
         }
         if (input.matches('.evaluator-speaker')) {
             input.dataset.selected = input.value;

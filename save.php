@@ -43,6 +43,10 @@ $date = DateTime::createFromFormat('!Y-m-d', $meeting['meeting_date']);
 if (!$date || $date->format('Y-m-d') !== $meeting['meeting_date']) { $errors[] = 'Enter a valid meeting date.'; }
 
 $meeting['roles'] = [];
+// Support forms opened before closing PO became an independent assignment.
+if (!array_key_exists('closing_presiding_officer', $_POST['roles'] ?? [])) {
+    $_POST['roles']['closing_presiding_officer'] = $_POST['roles']['presiding_officer'] ?? '';
+}
 $roleMembers = getRoleMembers();
 foreach (array_unique(array_filter(array_column(agendaDefinitions(), 2))) as $role) {
     $memberId = trim($_POST['roles'][$role] ?? '');

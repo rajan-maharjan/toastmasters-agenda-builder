@@ -11,6 +11,18 @@ A lightweight, web-based meeting agenda management and publishing application de
 
 ## Installation
 
+### Member reference migration
+
+When upgrading an existing database, pause agenda editing and run
+`php sql/migrate_member_references.php` from the project root before serving the updated code.
+Reload open agenda forms afterwards. The migration converts existing
+`tiab_functional_roles.member_id` values from legacy member numbers to `tin_members.id`
+and makes gender nullable. It records completion so rerunning it does not convert IDs twice,
+and refuses missing or ambiguous legacy references. Back up the database before deploying.
+Club membership tables continue using their existing legacy member numbers.
+New members require only mobile number and full name; introduction is optional.
+Their auto-generated `tin_members.id` is returned as `member_id` for agenda selection and saving.
+
 Anyone can create, edit, delete, view and download agendas without signing in. Saves and deletions require session-bound CSRF tokens. The application requires a dedicated database account with a password; see [SECURITY_REVIEW.md](SECURITY_REVIEW.md) for injection defenses and parent-site isolation requirements.
 
 ### Prerequisites

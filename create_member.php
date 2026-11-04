@@ -3,32 +3,27 @@ require_once __DIR__ . '/includes/security.php';
 requirePostAndCsrf();
 require_once __DIR__ . '/config/db.php';
 header('Content-Type: application/json; charset=UTF-8');
-$pdo = getDB();
 try {
     $values = [];
-    foreach (['member_id'=>10, 'full_name'=>500, 'club_id'=>10, 'gender'=>1, 'intro'=>1500] as $field=>$limit) {
+    foreach (['mobile_number'=>20, 'full_name'=>500, 'intro'=>1500] as $field=>$limit) {
         $value = $_POST[$field] ?? '';
         if (!is_string($value) || !mb_check_encoding($value, 'UTF-8') || mb_strlen($value)>$limit || str_contains($value, "\0")) throw new InvalidArgumentException('Invalid ' . $field . '.');
         $values[$field] = trim($value);
     }
-    if (!preg_match('/^[1-9][0-9]{0,9}$/D', $values['member_id']) || (float)$values['member_id']>2147483647) throw new InvalidArgumentException('Enter only numeric value from member ID (PN-XXXXXXX).');
+    if (!preg_match('/^(?:(?:\+977|977)?9[5-8]\d{8}|(?:\+91|91)?[6-9]\d{9}|(?:\+880|880|0)?1[3-9]\d{8})$/D', $values['mobile_number'])) throw new InvalidArgumentException('Enter proper mobile number (e.g: +9779851122778).');
     if ($values['full_name']==='') throw new InvalidArgumentException('Enter the full name.');
-    if (!in_array($values['gender'], ['M','F'], true)) throw new InvalidArgumentException('Select gender.');
-    $stmt=$pdo->prepare("SELECT club_id FROM tin_clubs WHERE club_id=?");
-    $stmt->execute([$values['club_id']]);
-    if (!$stmt->fetchColumn()) throw new InvalidArgumentException('Select a club.');
-    // Serialize creation because the imported member table has no unique member_id key.
+    $pdo = getDB();
+    // Serialize creation because the imported member table has no unique mobile number key.
     if (!$pdo->query("SELECT GET_LOCK('agenda_member_creation', 5)")->fetchColumn()) throw new RuntimeException('Please retry.');
     try {
         $pdo->beginTransaction();
-        $stmt=$pdo->prepare('SELECT id FROM tin_members WHERE member_id=? OR TRIM(full_name)=? LIMIT 1');
-        $stmt->execute([$values['member_id'],$values['full_name']]);
-        if ($stmt->fetchColumn()) throw new InvalidArgumentException('A member with this ID or name already exists. Select their club to find them in the suggestions.');
-        $stmt=$pdo->prepare("INSERT INTO tin_members (member_id,full_name,gender,intro,updated_by,updated_on) VALUES (?,?,?,?,0,CURDATE())");
-        $stmt->execute([$values['member_id'],$values['full_name'],$values['gender'],$values['intro']]);
-        $stmt=$pdo->prepare("INSERT INTO tin_members_club_role (member_id,club_id,role_code,fy_id) VALUES (?,?,'MEM',5)");
-        $stmt->execute([$values['member_id'],$values['club_id']]);
-        $member=getRoleMembers()[$values['member_id']];
+        $stmt=$pdo->prepare('SELECT id FROM tin_members WHERE mobile_number=? OR TRIM(full_name)=? LIMIT 1');
+        $stmt->execute([$values['mobile_number'],$values['full_name']]);
+        if ($stmt->fetchColumn()) throw new InvalidArgumentException('A member with this mobile number or name already exists. Select their club to find them in the suggestions.');
+        $stmt=$pdo->prepare("INSERT INTO tin_members (mobile_number,full_name,intro,email,current_do_position,skill_ids,profile_link,updated_by,updated_on) VALUES (?,?,?,'','','','',0,CURDATE())");
+        $stmt->execute([$values['mobile_number'],$values['full_name'],$values['intro']]);
+        $memberId = $pdo->lastInsertId();
+        $member = getRoleMembers()[$memberId];
         $pdo->commit();
     } finally {
         if ($pdo->inTransaction()) $pdo->rollBack();
